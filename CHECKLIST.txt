@@ -1,0 +1,22 @@
+CHECKLIST
+[ ] Variables
+    - scoping   
+    - binding   YES
+[X] Data types
+    - INT       YES
+    - FLOAT     YES
+    - PEMDAS    YES
+[X] Input Data
+    - Input     YES
+    - Output    YES
+[ ] Control Structures
+    -sequence
+    -selection
+    -iteration
+[ ] Booleans
+    - single expression, coercion
+[ ] Subprograms
+    - passing parameters
+    - header
+[X] Comments
+[ ] Line Number Tracker

@@ -1,0 +1,17 @@
+$ this is a comment, '$' must be followed by a white space(easy parsing)
+b174n6 l0d1 (){    
+    b174n6 j3j3A p0h    $ declaring vars must start with j3j3
+    b174n6 j3j3B p0h    $ note all must end in 'p0h' it acts like a ';'
+    b174n6 j3j3C p0h
+    l4b45 ("Enter A: ") p0h    $ this is output printf ( )
+    p4s0k ( "%d", &j3j3A) p0h    $ this is input - cannot output anything, even \n
+    j3j3B = 3 * 4 p0h
+    j3j3C = j3j3A * j3j3B p0h   $ arithmetic
+    l4b45 ( "A = %d, B = %d, C = %d", j3j3A, j3j3B, j3j3C) p0h  $ output
+    b174n6 j3j3i p0h    $ declared var i
+    j3j3i = 5 p0h $ assigning val
+    h4b4n6 ( j3j3i > 0 ){    $ while loop
+        j3j3i = j3j3i - 1 p0h
+    }
+    b471k 0 p0h
+}
