@@ -2,6 +2,8 @@ import ply.lex as lex
 import ply.yacc as yacc
 import sys
 
+lineCount = 1
+
 tokens = ['INT', #int and float: data types
         'FLOAT',
         'TYPEINT',
@@ -75,7 +77,7 @@ def t_OUTPUT(t):
     r'l4b45'
     return t
 def t_error(t):
-    print("Illegal character '%s' " %t.value[0])
+    print("Line %d: Illegal character '%s' " %(lineCount, t.value[0]))
     t.lexer.skip(len(t.value))
 def t_newline(t):          #line number tracker
      r'\n+'
@@ -179,7 +181,7 @@ def p_empty(p):
     '''
     p[0] = None
 def p_error(p):       #Error Handling
-    print('Syntax error in input')
+    print('Line %d: Syntax error in input' %lineCount)
     #look for terminating 'p0h'
     tok = parser.token()
     if not tok or tok.type == 'EOL': 
@@ -231,6 +233,7 @@ else:               #there's a legit file u wanna read
         except EOFError:
             break
         parser.parse(s)
+        lineCount += 1
         i+=1
 
         
