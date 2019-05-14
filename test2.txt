@@ -3,7 +3,7 @@ $ this is a comment, '$' must be followed by a white space(easy parsing)
 b174n6 j3j3A p0h   $ this is a comment 
 b174n6 j3j3B     $ error no p0h 
 
-kUn6 ( 5 < 6 ) { j3j3A = 5+6 p0h } 
+kUn6 ( 5 < 6 ) { j3j3A = 5 + 6 p0h } 3d1 { }
 
 kUn6 ( 5 p0h < 6 p0h ) {
 	j3j3A = 5+6 p0h

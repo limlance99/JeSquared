@@ -125,7 +125,7 @@ def t_IF(t):
 #     r's4k4'
 #     return t
 def t_ELSE(t):
-    r'3d1'
+    r'ed1'
     return t
 def t_WHILE(t):
     r'h4b4n6'
@@ -142,7 +142,7 @@ def t_error(t):
 
 def t_newline(t):
     r'\n+'
-    t.lexer.lineno += len(t.value)
+    t.lexer.lineno += t.value.count('\n')
 
 
 lexer = lex.lex()
@@ -226,7 +226,7 @@ def p_if(p):
     if : IF OPENPAR bool CLOSEPAR block else
        | IF OPENPAR bool CLOSEPAR block 
     '''
-    if p[6] is not None:
+    if len(p) > 6:
         p[0]=('if_else',p[3], p[5], p[6])
     else:
         p[0]=('if',p[3], p[5])
@@ -416,18 +416,14 @@ if(f == ""):        #testing for indiv statements
             break
         parser.parse(s)
 else:               #there's a legit file u wanna read
-    inp = open(f + ".txt","r")
-    inp = [i for i in inp.readlines()]
+    s = open(f + ".txt","r").read()
     i = 0
-    while i < len(inp):
-        print(inp[i])  
-        try:
-            s = inp[i]
-        except EOFError:
-            break
+    try:
         parser.parse(s)
-        lineCount += 1
-        i+=1
+    except EOFError:
+        print("Done reading File.")
+
+    lineCount += 1
 
         
 
