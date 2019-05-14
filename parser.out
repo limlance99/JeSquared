@@ -1,0 +1,1599 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    FOR
+    MAINCOMMENT
+    NOT
+    RETURN
+    STRING
+    THEN
+    TO
+    TYPESTRING
+
+Grammar
+
+Rule 0     S' -> code
+Rule 1     code -> vardeclare EOL
+Rule 2     code -> io EOL
+Rule 3     code -> expression EOL
+Rule 4     code -> while
+Rule 5     code -> if
+Rule 6     code -> empty
+Rule 7     io -> inputoutput OPENPAR iodata CLOSEPAR
+Rule 8     io -> inputoutput error
+Rule 9     inputoutput -> INPUT
+Rule 10    inputoutput -> OUTPUT
+Rule 11    iodata -> QUOTEMARK percenttype QUOTEMARK COMMA AND NAME
+Rule 12    percenttype -> PERCENTFLOAT
+Rule 13    percenttype -> PERCENTINT
+Rule 14    datatype -> TYPEFLOAT
+Rule 15    datatype -> TYPEINT
+Rule 16    bool -> expression boolop expression
+Rule 17    bool -> bool boolop bool
+Rule 18    bool -> expression boolop bool
+Rule 19    bool -> bool boolop expression
+Rule 20    boolop -> EQ
+Rule 21    boolop -> NEQ
+Rule 22    boolop -> LSS
+Rule 23    boolop -> GTR
+Rule 24    boolop -> LEQ
+Rule 25    boolop -> GEQ
+Rule 26    boolop -> AND
+Rule 27    boolop -> OR
+Rule 28    if -> IF OPENPAR bool CLOSEPAR block else
+Rule 29    if -> IF OPENPAR bool CLOSEPAR block
+Rule 30    else -> ELSE block
+Rule 31    while -> WHILE OPENPAR bool CLOSEPAR block
+Rule 32    block -> OPENCURL while CLOSECURL
+Rule 33    block -> OPENCURL if CLOSECURL
+Rule 34    block -> OPENCURL bcode CLOSECURL
+Rule 35    bcode -> io EOL
+Rule 36    bcode -> expression EOL
+Rule 37    bcode -> empty
+Rule 38    expression -> expression EXP expression
+Rule 39    expression -> expression MULTIPLY expression
+Rule 40    expression -> expression DIVIDE expression
+Rule 41    expression -> expression PLUS expression
+Rule 42    expression -> expression MINUS expression
+Rule 43    expression -> OPENPAR expression CLOSEPAR
+Rule 44    oper -> EXP
+Rule 45    oper -> MULTIPLY
+Rule 46    oper -> DIVIDE
+Rule 47    oper -> PLUS
+Rule 48    oper -> MINUS
+Rule 49    oper -> EQUALS
+Rule 50    vardeclare -> datatype NAME
+Rule 51    expression -> NAME EQUALS expression
+Rule 52    expression -> NAME EQUALS NAME
+Rule 53    expression -> INT
+Rule 54    expression -> FLOAT
+Rule 55    empty -> <empty>
+
+Terminals, with rules where they appear
+
+AND                  : 11 26
+CLOSECURL            : 32 33 34
+CLOSEPAR             : 7 28 29 31 43
+COMMA                : 11
+DIVIDE               : 40 46
+ELSE                 : 30
+EOL                  : 1 2 3 35 36
+EQ                   : 20
+EQUALS               : 49 51 52
+EXP                  : 38 44
+FLOAT                : 54
+FOR                  : 
+GEQ                  : 25
+GTR                  : 23
+IF                   : 28 29
+INPUT                : 9
+INT                  : 53
+LEQ                  : 24
+LSS                  : 22
+MAINCOMMENT          : 
+MINUS                : 42 48
+MULTIPLY             : 39 45
+NAME                 : 11 50 51 52 52
+NEQ                  : 21
+NOT                  : 
+OPENCURL             : 32 33 34
+OPENPAR              : 7 28 29 31 43
+OR                   : 27
+OUTPUT               : 10
+PERCENTFLOAT         : 12
+PERCENTINT           : 13
+PLUS                 : 41 47
+QUOTEMARK            : 11 11
+RETURN               : 
+STRING               : 
+THEN                 : 
+TO                   : 
+TYPEFLOAT            : 14
+TYPEINT              : 15
+TYPESTRING           : 
+WHILE                : 31
+error                : 8
+
+Nonterminals, with rules where they appear
+
+bcode                : 34
+block                : 28 29 30 31
+bool                 : 17 17 18 19 28 29 31
+boolop               : 16 17 18 19
+code                 : 0
+datatype             : 50
+else                 : 28
+empty                : 6 37
+expression           : 3 16 16 18 19 36 38 38 39 39 40 40 41 41 42 42 43 51
+if                   : 5 33
+inputoutput          : 7 8
+io                   : 2 35
+iodata               : 7
+oper                 : 
+percenttype          : 11
+vardeclare           : 1
+while                : 4 32
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . code
+    (1) code -> . vardeclare EOL
+    (2) code -> . io EOL
+    (3) code -> . expression EOL
+    (4) code -> . while
+    (5) code -> . if
+    (6) code -> . empty
+    (50) vardeclare -> . datatype NAME
+    (7) io -> . inputoutput OPENPAR iodata CLOSEPAR
+    (8) io -> . inputoutput error
+    (38) expression -> . expression EXP expression
+    (39) expression -> . expression MULTIPLY expression
+    (40) expression -> . expression DIVIDE expression
+    (41) expression -> . expression PLUS expression
+    (42) expression -> . expression MINUS expression
+    (43) expression -> . OPENPAR expression CLOSEPAR
+    (51) expression -> . NAME EQUALS expression
+    (52) expression -> . NAME EQUALS NAME
+    (53) expression -> . INT
+    (54) expression -> . FLOAT
+    (31) while -> . WHILE OPENPAR bool CLOSEPAR block
+    (28) if -> . IF OPENPAR bool CLOSEPAR block else
+    (29) if -> . IF OPENPAR bool CLOSEPAR block
+    (55) empty -> .
+    (14) datatype -> . TYPEFLOAT
+    (15) datatype -> . TYPEINT
+    (9) inputoutput -> . INPUT
+    (10) inputoutput -> . OUTPUT
+
+    OPENPAR         shift and go to state 11
+    NAME            shift and go to state 9
+    INT             shift and go to state 12
+    FLOAT           shift and go to state 13
+    WHILE           shift and go to state 14
+    IF              shift and go to state 15
+    $end            reduce using rule 55 (empty -> .)
+    TYPEFLOAT       shift and go to state 16
+    TYPEINT         shift and go to state 17
+    INPUT           shift and go to state 18
+    OUTPUT          shift and go to state 19
+
+    code                           shift and go to state 1
+    vardeclare                     shift and go to state 2
+    io                             shift and go to state 3
+    expression                     shift and go to state 4
+    while                          shift and go to state 5
+    if                             shift and go to state 6
+    empty                          shift and go to state 7
+    datatype                       shift and go to state 8
+    inputoutput                    shift and go to state 10
+
+state 1
+
+    (0) S' -> code .
+
+
+
+state 2
+
+    (1) code -> vardeclare . EOL
+
+    EOL             shift and go to state 20
+
+
+state 3
+
+    (2) code -> io . EOL
+
+    EOL             shift and go to state 21
+
+
+state 4
+
+    (3) code -> expression . EOL
+    (38) expression -> expression . EXP expression
+    (39) expression -> expression . MULTIPLY expression
+    (40) expression -> expression . DIVIDE expression
+    (41) expression -> expression . PLUS expression
+    (42) expression -> expression . MINUS expression
+
+    EOL             shift and go to state 22
+    EXP             shift and go to state 23
+    MULTIPLY        shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+
+
+state 5
+
+    (4) code -> while .
+
+    $end            reduce using rule 4 (code -> while .)
+
+
+state 6
+
+    (5) code -> if .
+
+    $end            reduce using rule 5 (code -> if .)
+
+
+state 7
+
+    (6) code -> empty .
+
+    $end            reduce using rule 6 (code -> empty .)
+
+
+state 8
+
+    (50) vardeclare -> datatype . NAME
+
+    NAME            shift and go to state 28
+
+
+state 9
+
+    (51) expression -> NAME . EQUALS expression
+    (52) expression -> NAME . EQUALS NAME
+
+    EQUALS          shift and go to state 29
+
+
+state 10
+
+    (7) io -> inputoutput . OPENPAR iodata CLOSEPAR
+    (8) io -> inputoutput . error
+
+    OPENPAR         shift and go to state 30
+    error           shift and go to state 31
+
+
+state 11
+
+    (43) expression -> OPENPAR . expression CLOSEPAR
+    (38) expression -> . expression EXP expression
+    (39) expression -> . expression MULTIPLY expression
+    (40) expression -> . expression DIVIDE expression
+    (41) expression -> . expression PLUS expression
+    (42) expression -> . expression MINUS expression
+    (43) expression -> . OPENPAR expression CLOSEPAR
+    (51) expression -> . NAME EQUALS expression
+    (52) expression -> . NAME EQUALS NAME
+    (53) expression -> . INT
+    (54) expression -> . FLOAT
+
+    OPENPAR         shift and go to state 11
+    NAME            shift and go to state 9
+    INT             shift and go to state 12
+    FLOAT           shift and go to state 13
+
+    expression                     shift and go to state 32
+
+state 12
+
+    (53) expression -> INT .
+
+    EOL             reduce using rule 53 (expression -> INT .)
+    EXP             reduce using rule 53 (expression -> INT .)
+    MULTIPLY        reduce using rule 53 (expression -> INT .)
+    DIVIDE          reduce using rule 53 (expression -> INT .)
+    PLUS            reduce using rule 53 (expression -> INT .)
+    MINUS           reduce using rule 53 (expression -> INT .)
+    CLOSEPAR        reduce using rule 53 (expression -> INT .)
+    EQ              reduce using rule 53 (expression -> INT .)
+    NEQ             reduce using rule 53 (expression -> INT .)
+    LSS             reduce using rule 53 (expression -> INT .)
+    GTR             reduce using rule 53 (expression -> INT .)
+    LEQ             reduce using rule 53 (expression -> INT .)
+    GEQ             reduce using rule 53 (expression -> INT .)
+    AND             reduce using rule 53 (expression -> INT .)
+    OR              reduce using rule 53 (expression -> INT .)
+
+
+state 13
+
+    (54) expression -> FLOAT .
+
+    EOL             reduce using rule 54 (expression -> FLOAT .)
+    EXP             reduce using rule 54 (expression -> FLOAT .)
+    MULTIPLY        reduce using rule 54 (expression -> FLOAT .)
+    DIVIDE          reduce using rule 54 (expression -> FLOAT .)
+    PLUS            reduce using rule 54 (expression -> FLOAT .)
+    MINUS           reduce using rule 54 (expression -> FLOAT .)
+    CLOSEPAR        reduce using rule 54 (expression -> FLOAT .)
+    EQ              reduce using rule 54 (expression -> FLOAT .)
+    NEQ             reduce using rule 54 (expression -> FLOAT .)
+    LSS             reduce using rule 54 (expression -> FLOAT .)
+    GTR             reduce using rule 54 (expression -> FLOAT .)
+    LEQ             reduce using rule 54 (expression -> FLOAT .)
+    GEQ             reduce using rule 54 (expression -> FLOAT .)
+    AND             reduce using rule 54 (expression -> FLOAT .)
+    OR              reduce using rule 54 (expression -> FLOAT .)
+
+
+state 14
+
+    (31) while -> WHILE . OPENPAR bool CLOSEPAR block
+
+    OPENPAR         shift and go to state 33
+
+
+state 15
+
+    (28) if -> IF . OPENPAR bool CLOSEPAR block else
+    (29) if -> IF . OPENPAR bool CLOSEPAR block
+
+    OPENPAR         shift and go to state 34
+
+
+state 16
+
+    (14) datatype -> TYPEFLOAT .
+
+    NAME            reduce using rule 14 (datatype -> TYPEFLOAT .)
+
+
+state 17
+
+    (15) datatype -> TYPEINT .
+
+    NAME            reduce using rule 15 (datatype -> TYPEINT .)
+
+
+state 18
+
+    (9) inputoutput -> INPUT .
+
+    OPENPAR         reduce using rule 9 (inputoutput -> INPUT .)
+    error           reduce using rule 9 (inputoutput -> INPUT .)
+
+
+state 19
+
+    (10) inputoutput -> OUTPUT .
+
+    OPENPAR         reduce using rule 10 (inputoutput -> OUTPUT .)
+    error           reduce using rule 10 (inputoutput -> OUTPUT .)
+
+
+state 20
+
+    (1) code -> vardeclare EOL .
+
+    $end            reduce using rule 1 (code -> vardeclare EOL .)
+
+
+state 21
+
+    (2) code -> io EOL .
+
+    $end            reduce using rule 2 (code -> io EOL .)
+
+
+state 22
+
+    (3) code -> expression EOL .
+
+    $end            reduce using rule 3 (code -> expression EOL .)
+
+
+state 23
+
+    (38) expression -> expression EXP . expression
+    (38) expression -> . expression EXP expression
+    (39) expression -> . expression MULTIPLY expression
+    (40) expression -> . expression DIVIDE expression
+    (41) expression -> . expression PLUS expression
+    (42) expression -> . expression MINUS expression
+    (43) expression -> . OPENPAR expression CLOSEPAR
+    (51) expression -> . NAME EQUALS expression
+    (52) expression -> . NAME EQUALS NAME
+    (53) expression -> . INT
+    (54) expression -> . FLOAT
+
+    OPENPAR         shift and go to state 11
+    NAME            shift and go to state 9
+    INT             shift and go to state 12
+    FLOAT           shift and go to state 13
+
+    expression                     shift and go to state 35
+
+state 24
+
+    (39) expression -> expression MULTIPLY . expression
+    (38) expression -> . expression EXP expression
+    (39) expression -> . expression MULTIPLY expression
+    (40) expression -> . expression DIVIDE expression
+    (41) expression -> . expression PLUS expression
+    (42) expression -> . expression MINUS expression
+    (43) expression -> . OPENPAR expression CLOSEPAR
+    (51) expression -> . NAME EQUALS expression
+    (52) expression -> . NAME EQUALS NAME
+    (53) expression -> . INT
+    (54) expression -> . FLOAT
+
+    OPENPAR         shift and go to state 11
+    NAME            shift and go to state 9
+    INT             shift and go to state 12
+    FLOAT           shift and go to state 13
+
+    expression                     shift and go to state 36
+
+state 25
+
+    (40) expression -> expression DIVIDE . expression
+    (38) expression -> . expression EXP expression
+    (39) expression -> . expression MULTIPLY expression
+    (40) expression -> . expression DIVIDE expression
+    (41) expression -> . expression PLUS expression
+    (42) expression -> . expression MINUS expression
+    (43) expression -> . OPENPAR expression CLOSEPAR
+    (51) expression -> . NAME EQUALS expression
+    (52) expression -> . NAME EQUALS NAME
+    (53) expression -> . INT
+    (54) expression -> . FLOAT
+
+    OPENPAR         shift and go to state 11
+    NAME            shift and go to state 9
+    INT             shift and go to state 12
+    FLOAT           shift and go to state 13
+
+    expression                     shift and go to state 37
+
+state 26
+
+    (41) expression -> expression PLUS . expression
+    (38) expression -> . expression EXP expression
+    (39) expression -> . expression MULTIPLY expression
+    (40) expression -> . expression DIVIDE expression
+    (41) expression -> . expression PLUS expression
+    (42) expression -> . expression MINUS expression
+    (43) expression -> . OPENPAR expression CLOSEPAR
+    (51) expression -> . NAME EQUALS expression
+    (52) expression -> . NAME EQUALS NAME
+    (53) expression -> . INT
+    (54) expression -> . FLOAT
+
+    OPENPAR         shift and go to state 11
+    NAME            shift and go to state 9
+    INT             shift and go to state 12
+    FLOAT           shift and go to state 13
+
+    expression                     shift and go to state 38
+
+state 27
+
+    (42) expression -> expression MINUS . expression
+    (38) expression -> . expression EXP expression
+    (39) expression -> . expression MULTIPLY expression
+    (40) expression -> . expression DIVIDE expression
+    (41) expression -> . expression PLUS expression
+    (42) expression -> . expression MINUS expression
+    (43) expression -> . OPENPAR expression CLOSEPAR
+    (51) expression -> . NAME EQUALS expression
+    (52) expression -> . NAME EQUALS NAME
+    (53) expression -> . INT
+    (54) expression -> . FLOAT
+
+    OPENPAR         shift and go to state 11
+    NAME            shift and go to state 9
+    INT             shift and go to state 12
+    FLOAT           shift and go to state 13
+
+    expression                     shift and go to state 39
+
+state 28
+
+    (50) vardeclare -> datatype NAME .
+
+    EOL             reduce using rule 50 (vardeclare -> datatype NAME .)
+
+
+state 29
+
+    (51) expression -> NAME EQUALS . expression
+    (52) expression -> NAME EQUALS . NAME
+    (38) expression -> . expression EXP expression
+    (39) expression -> . expression MULTIPLY expression
+    (40) expression -> . expression DIVIDE expression
+    (41) expression -> . expression PLUS expression
+    (42) expression -> . expression MINUS expression
+    (43) expression -> . OPENPAR expression CLOSEPAR
+    (51) expression -> . NAME EQUALS expression
+    (52) expression -> . NAME EQUALS NAME
+    (53) expression -> . INT
+    (54) expression -> . FLOAT
+
+    NAME            shift and go to state 40
+    OPENPAR         shift and go to state 11
+    INT             shift and go to state 12
+    FLOAT           shift and go to state 13
+
+    expression                     shift and go to state 41
+
+state 30
+
+    (7) io -> inputoutput OPENPAR . iodata CLOSEPAR
+    (11) iodata -> . QUOTEMARK percenttype QUOTEMARK COMMA AND NAME
+
+    QUOTEMARK       shift and go to state 43
+
+    iodata                         shift and go to state 42
+
+state 31
+
+    (8) io -> inputoutput error .
+
+    EOL             reduce using rule 8 (io -> inputoutput error .)
+
+
+state 32
+
+    (43) expression -> OPENPAR expression . CLOSEPAR
+    (38) expression -> expression . EXP expression
+    (39) expression -> expression . MULTIPLY expression
+    (40) expression -> expression . DIVIDE expression
+    (41) expression -> expression . PLUS expression
+    (42) expression -> expression . MINUS expression
+
+    CLOSEPAR        shift and go to state 44
+    EXP             shift and go to state 23
+    MULTIPLY        shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+
+
+state 33
+
+    (31) while -> WHILE OPENPAR . bool CLOSEPAR block
+    (16) bool -> . expression boolop expression
+    (17) bool -> . bool boolop bool
+    (18) bool -> . expression boolop bool
+    (19) bool -> . bool boolop expression
+    (38) expression -> . expression EXP expression
+    (39) expression -> . expression MULTIPLY expression
+    (40) expression -> . expression DIVIDE expression
+    (41) expression -> . expression PLUS expression
+    (42) expression -> . expression MINUS expression
+    (43) expression -> . OPENPAR expression CLOSEPAR
+    (51) expression -> . NAME EQUALS expression
+    (52) expression -> . NAME EQUALS NAME
+    (53) expression -> . INT
+    (54) expression -> . FLOAT
+
+    OPENPAR         shift and go to state 11
+    NAME            shift and go to state 9
+    INT             shift and go to state 12
+    FLOAT           shift and go to state 13
+
+    bool                           shift and go to state 45
+    expression                     shift and go to state 46
+
+state 34
+
+    (28) if -> IF OPENPAR . bool CLOSEPAR block else
+    (29) if -> IF OPENPAR . bool CLOSEPAR block
+    (16) bool -> . expression boolop expression
+    (17) bool -> . bool boolop bool
+    (18) bool -> . expression boolop bool
+    (19) bool -> . bool boolop expression
+    (38) expression -> . expression EXP expression
+    (39) expression -> . expression MULTIPLY expression
+    (40) expression -> . expression DIVIDE expression
+    (41) expression -> . expression PLUS expression
+    (42) expression -> . expression MINUS expression
+    (43) expression -> . OPENPAR expression CLOSEPAR
+    (51) expression -> . NAME EQUALS expression
+    (52) expression -> . NAME EQUALS NAME
+    (53) expression -> . INT
+    (54) expression -> . FLOAT
+
+    OPENPAR         shift and go to state 11
+    NAME            shift and go to state 9
+    INT             shift and go to state 12
+    FLOAT           shift and go to state 13
+
+    bool                           shift and go to state 47
+    expression                     shift and go to state 46
+
+state 35
+
+    (38) expression -> expression EXP expression .
+    (38) expression -> expression . EXP expression
+    (39) expression -> expression . MULTIPLY expression
+    (40) expression -> expression . DIVIDE expression
+    (41) expression -> expression . PLUS expression
+    (42) expression -> expression . MINUS expression
+
+    EOL             reduce using rule 38 (expression -> expression EXP expression .)
+    EXP             reduce using rule 38 (expression -> expression EXP expression .)
+    MULTIPLY        reduce using rule 38 (expression -> expression EXP expression .)
+    DIVIDE          reduce using rule 38 (expression -> expression EXP expression .)
+    PLUS            reduce using rule 38 (expression -> expression EXP expression .)
+    MINUS           reduce using rule 38 (expression -> expression EXP expression .)
+    CLOSEPAR        reduce using rule 38 (expression -> expression EXP expression .)
+    EQ              reduce using rule 38 (expression -> expression EXP expression .)
+    NEQ             reduce using rule 38 (expression -> expression EXP expression .)
+    LSS             reduce using rule 38 (expression -> expression EXP expression .)
+    GTR             reduce using rule 38 (expression -> expression EXP expression .)
+    LEQ             reduce using rule 38 (expression -> expression EXP expression .)
+    GEQ             reduce using rule 38 (expression -> expression EXP expression .)
+    AND             reduce using rule 38 (expression -> expression EXP expression .)
+    OR              reduce using rule 38 (expression -> expression EXP expression .)
+
+  ! EXP             [ shift and go to state 23 ]
+  ! MULTIPLY        [ shift and go to state 24 ]
+  ! DIVIDE          [ shift and go to state 25 ]
+  ! PLUS            [ shift and go to state 26 ]
+  ! MINUS           [ shift and go to state 27 ]
+
+
+state 36
+
+    (39) expression -> expression MULTIPLY expression .
+    (38) expression -> expression . EXP expression
+    (39) expression -> expression . MULTIPLY expression
+    (40) expression -> expression . DIVIDE expression
+    (41) expression -> expression . PLUS expression
+    (42) expression -> expression . MINUS expression
+
+    EOL             reduce using rule 39 (expression -> expression MULTIPLY expression .)
+    MULTIPLY        reduce using rule 39 (expression -> expression MULTIPLY expression .)
+    DIVIDE          reduce using rule 39 (expression -> expression MULTIPLY expression .)
+    PLUS            reduce using rule 39 (expression -> expression MULTIPLY expression .)
+    MINUS           reduce using rule 39 (expression -> expression MULTIPLY expression .)
+    CLOSEPAR        reduce using rule 39 (expression -> expression MULTIPLY expression .)
+    EQ              reduce using rule 39 (expression -> expression MULTIPLY expression .)
+    NEQ             reduce using rule 39 (expression -> expression MULTIPLY expression .)
+    LSS             reduce using rule 39 (expression -> expression MULTIPLY expression .)
+    GTR             reduce using rule 39 (expression -> expression MULTIPLY expression .)
+    LEQ             reduce using rule 39 (expression -> expression MULTIPLY expression .)
+    GEQ             reduce using rule 39 (expression -> expression MULTIPLY expression .)
+    AND             reduce using rule 39 (expression -> expression MULTIPLY expression .)
+    OR              reduce using rule 39 (expression -> expression MULTIPLY expression .)
+    EXP             shift and go to state 23
+
+  ! EXP             [ reduce using rule 39 (expression -> expression MULTIPLY expression .) ]
+  ! MULTIPLY        [ shift and go to state 24 ]
+  ! DIVIDE          [ shift and go to state 25 ]
+  ! PLUS            [ shift and go to state 26 ]
+  ! MINUS           [ shift and go to state 27 ]
+
+
+state 37
+
+    (40) expression -> expression DIVIDE expression .
+    (38) expression -> expression . EXP expression
+    (39) expression -> expression . MULTIPLY expression
+    (40) expression -> expression . DIVIDE expression
+    (41) expression -> expression . PLUS expression
+    (42) expression -> expression . MINUS expression
+
+    EOL             reduce using rule 40 (expression -> expression DIVIDE expression .)
+    MULTIPLY        reduce using rule 40 (expression -> expression DIVIDE expression .)
+    DIVIDE          reduce using rule 40 (expression -> expression DIVIDE expression .)
+    PLUS            reduce using rule 40 (expression -> expression DIVIDE expression .)
+    MINUS           reduce using rule 40 (expression -> expression DIVIDE expression .)
+    CLOSEPAR        reduce using rule 40 (expression -> expression DIVIDE expression .)
+    EQ              reduce using rule 40 (expression -> expression DIVIDE expression .)
+    NEQ             reduce using rule 40 (expression -> expression DIVIDE expression .)
+    LSS             reduce using rule 40 (expression -> expression DIVIDE expression .)
+    GTR             reduce using rule 40 (expression -> expression DIVIDE expression .)
+    LEQ             reduce using rule 40 (expression -> expression DIVIDE expression .)
+    GEQ             reduce using rule 40 (expression -> expression DIVIDE expression .)
+    AND             reduce using rule 40 (expression -> expression DIVIDE expression .)
+    OR              reduce using rule 40 (expression -> expression DIVIDE expression .)
+    EXP             shift and go to state 23
+
+  ! EXP             [ reduce using rule 40 (expression -> expression DIVIDE expression .) ]
+  ! MULTIPLY        [ shift and go to state 24 ]
+  ! DIVIDE          [ shift and go to state 25 ]
+  ! PLUS            [ shift and go to state 26 ]
+  ! MINUS           [ shift and go to state 27 ]
+
+
+state 38
+
+    (41) expression -> expression PLUS expression .
+    (38) expression -> expression . EXP expression
+    (39) expression -> expression . MULTIPLY expression
+    (40) expression -> expression . DIVIDE expression
+    (41) expression -> expression . PLUS expression
+    (42) expression -> expression . MINUS expression
+
+    EOL             reduce using rule 41 (expression -> expression PLUS expression .)
+    PLUS            reduce using rule 41 (expression -> expression PLUS expression .)
+    MINUS           reduce using rule 41 (expression -> expression PLUS expression .)
+    CLOSEPAR        reduce using rule 41 (expression -> expression PLUS expression .)
+    EQ              reduce using rule 41 (expression -> expression PLUS expression .)
+    NEQ             reduce using rule 41 (expression -> expression PLUS expression .)
+    LSS             reduce using rule 41 (expression -> expression PLUS expression .)
+    GTR             reduce using rule 41 (expression -> expression PLUS expression .)
+    LEQ             reduce using rule 41 (expression -> expression PLUS expression .)
+    GEQ             reduce using rule 41 (expression -> expression PLUS expression .)
+    AND             reduce using rule 41 (expression -> expression PLUS expression .)
+    OR              reduce using rule 41 (expression -> expression PLUS expression .)
+    EXP             shift and go to state 23
+    MULTIPLY        shift and go to state 24
+    DIVIDE          shift and go to state 25
+
+  ! EXP             [ reduce using rule 41 (expression -> expression PLUS expression .) ]
+  ! MULTIPLY        [ reduce using rule 41 (expression -> expression PLUS expression .) ]
+  ! DIVIDE          [ reduce using rule 41 (expression -> expression PLUS expression .) ]
+  ! PLUS            [ shift and go to state 26 ]
+  ! MINUS           [ shift and go to state 27 ]
+
+
+state 39
+
+    (42) expression -> expression MINUS expression .
+    (38) expression -> expression . EXP expression
+    (39) expression -> expression . MULTIPLY expression
+    (40) expression -> expression . DIVIDE expression
+    (41) expression -> expression . PLUS expression
+    (42) expression -> expression . MINUS expression
+
+    EOL             reduce using rule 42 (expression -> expression MINUS expression .)
+    PLUS            reduce using rule 42 (expression -> expression MINUS expression .)
+    MINUS           reduce using rule 42 (expression -> expression MINUS expression .)
+    CLOSEPAR        reduce using rule 42 (expression -> expression MINUS expression .)
+    EQ              reduce using rule 42 (expression -> expression MINUS expression .)
+    NEQ             reduce using rule 42 (expression -> expression MINUS expression .)
+    LSS             reduce using rule 42 (expression -> expression MINUS expression .)
+    GTR             reduce using rule 42 (expression -> expression MINUS expression .)
+    LEQ             reduce using rule 42 (expression -> expression MINUS expression .)
+    GEQ             reduce using rule 42 (expression -> expression MINUS expression .)
+    AND             reduce using rule 42 (expression -> expression MINUS expression .)
+    OR              reduce using rule 42 (expression -> expression MINUS expression .)
+    EXP             shift and go to state 23
+    MULTIPLY        shift and go to state 24
+    DIVIDE          shift and go to state 25
+
+  ! EXP             [ reduce using rule 42 (expression -> expression MINUS expression .) ]
+  ! MULTIPLY        [ reduce using rule 42 (expression -> expression MINUS expression .) ]
+  ! DIVIDE          [ reduce using rule 42 (expression -> expression MINUS expression .) ]
+  ! PLUS            [ shift and go to state 26 ]
+  ! MINUS           [ shift and go to state 27 ]
+
+
+state 40
+
+    (52) expression -> NAME EQUALS NAME .
+    (51) expression -> NAME . EQUALS expression
+    (52) expression -> NAME . EQUALS NAME
+
+    EOL             reduce using rule 52 (expression -> NAME EQUALS NAME .)
+    EXP             reduce using rule 52 (expression -> NAME EQUALS NAME .)
+    MULTIPLY        reduce using rule 52 (expression -> NAME EQUALS NAME .)
+    DIVIDE          reduce using rule 52 (expression -> NAME EQUALS NAME .)
+    PLUS            reduce using rule 52 (expression -> NAME EQUALS NAME .)
+    MINUS           reduce using rule 52 (expression -> NAME EQUALS NAME .)
+    CLOSEPAR        reduce using rule 52 (expression -> NAME EQUALS NAME .)
+    EQ              reduce using rule 52 (expression -> NAME EQUALS NAME .)
+    NEQ             reduce using rule 52 (expression -> NAME EQUALS NAME .)
+    LSS             reduce using rule 52 (expression -> NAME EQUALS NAME .)
+    GTR             reduce using rule 52 (expression -> NAME EQUALS NAME .)
+    LEQ             reduce using rule 52 (expression -> NAME EQUALS NAME .)
+    GEQ             reduce using rule 52 (expression -> NAME EQUALS NAME .)
+    AND             reduce using rule 52 (expression -> NAME EQUALS NAME .)
+    OR              reduce using rule 52 (expression -> NAME EQUALS NAME .)
+    EQUALS          shift and go to state 29
+
+
+state 41
+
+    (51) expression -> NAME EQUALS expression .
+    (38) expression -> expression . EXP expression
+    (39) expression -> expression . MULTIPLY expression
+    (40) expression -> expression . DIVIDE expression
+    (41) expression -> expression . PLUS expression
+    (42) expression -> expression . MINUS expression
+
+  ! shift/reduce conflict for EXP resolved as shift
+  ! shift/reduce conflict for MULTIPLY resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+    EOL             reduce using rule 51 (expression -> NAME EQUALS expression .)
+    CLOSEPAR        reduce using rule 51 (expression -> NAME EQUALS expression .)
+    EQ              reduce using rule 51 (expression -> NAME EQUALS expression .)
+    NEQ             reduce using rule 51 (expression -> NAME EQUALS expression .)
+    LSS             reduce using rule 51 (expression -> NAME EQUALS expression .)
+    GTR             reduce using rule 51 (expression -> NAME EQUALS expression .)
+    LEQ             reduce using rule 51 (expression -> NAME EQUALS expression .)
+    GEQ             reduce using rule 51 (expression -> NAME EQUALS expression .)
+    AND             reduce using rule 51 (expression -> NAME EQUALS expression .)
+    OR              reduce using rule 51 (expression -> NAME EQUALS expression .)
+    EXP             shift and go to state 23
+    MULTIPLY        shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+
+  ! EXP             [ reduce using rule 51 (expression -> NAME EQUALS expression .) ]
+  ! MULTIPLY        [ reduce using rule 51 (expression -> NAME EQUALS expression .) ]
+  ! DIVIDE          [ reduce using rule 51 (expression -> NAME EQUALS expression .) ]
+  ! PLUS            [ reduce using rule 51 (expression -> NAME EQUALS expression .) ]
+  ! MINUS           [ reduce using rule 51 (expression -> NAME EQUALS expression .) ]
+
+
+state 42
+
+    (7) io -> inputoutput OPENPAR iodata . CLOSEPAR
+
+    CLOSEPAR        shift and go to state 48
+
+
+state 43
+
+    (11) iodata -> QUOTEMARK . percenttype QUOTEMARK COMMA AND NAME
+    (12) percenttype -> . PERCENTFLOAT
+    (13) percenttype -> . PERCENTINT
+
+    PERCENTFLOAT    shift and go to state 50
+    PERCENTINT      shift and go to state 51
+
+    percenttype                    shift and go to state 49
+
+state 44
+
+    (43) expression -> OPENPAR expression CLOSEPAR .
+
+    EOL             reduce using rule 43 (expression -> OPENPAR expression CLOSEPAR .)
+    EXP             reduce using rule 43 (expression -> OPENPAR expression CLOSEPAR .)
+    MULTIPLY        reduce using rule 43 (expression -> OPENPAR expression CLOSEPAR .)
+    DIVIDE          reduce using rule 43 (expression -> OPENPAR expression CLOSEPAR .)
+    PLUS            reduce using rule 43 (expression -> OPENPAR expression CLOSEPAR .)
+    MINUS           reduce using rule 43 (expression -> OPENPAR expression CLOSEPAR .)
+    CLOSEPAR        reduce using rule 43 (expression -> OPENPAR expression CLOSEPAR .)
+    EQ              reduce using rule 43 (expression -> OPENPAR expression CLOSEPAR .)
+    NEQ             reduce using rule 43 (expression -> OPENPAR expression CLOSEPAR .)
+    LSS             reduce using rule 43 (expression -> OPENPAR expression CLOSEPAR .)
+    GTR             reduce using rule 43 (expression -> OPENPAR expression CLOSEPAR .)
+    LEQ             reduce using rule 43 (expression -> OPENPAR expression CLOSEPAR .)
+    GEQ             reduce using rule 43 (expression -> OPENPAR expression CLOSEPAR .)
+    AND             reduce using rule 43 (expression -> OPENPAR expression CLOSEPAR .)
+    OR              reduce using rule 43 (expression -> OPENPAR expression CLOSEPAR .)
+
+
+state 45
+
+    (31) while -> WHILE OPENPAR bool . CLOSEPAR block
+    (17) bool -> bool . boolop bool
+    (19) bool -> bool . boolop expression
+    (20) boolop -> . EQ
+    (21) boolop -> . NEQ
+    (22) boolop -> . LSS
+    (23) boolop -> . GTR
+    (24) boolop -> . LEQ
+    (25) boolop -> . GEQ
+    (26) boolop -> . AND
+    (27) boolop -> . OR
+
+    CLOSEPAR        shift and go to state 52
+    EQ              shift and go to state 54
+    NEQ             shift and go to state 55
+    LSS             shift and go to state 56
+    GTR             shift and go to state 57
+    LEQ             shift and go to state 58
+    GEQ             shift and go to state 59
+    AND             shift and go to state 60
+    OR              shift and go to state 61
+
+    boolop                         shift and go to state 53
+
+state 46
+
+    (16) bool -> expression . boolop expression
+    (18) bool -> expression . boolop bool
+    (38) expression -> expression . EXP expression
+    (39) expression -> expression . MULTIPLY expression
+    (40) expression -> expression . DIVIDE expression
+    (41) expression -> expression . PLUS expression
+    (42) expression -> expression . MINUS expression
+    (20) boolop -> . EQ
+    (21) boolop -> . NEQ
+    (22) boolop -> . LSS
+    (23) boolop -> . GTR
+    (24) boolop -> . LEQ
+    (25) boolop -> . GEQ
+    (26) boolop -> . AND
+    (27) boolop -> . OR
+
+    EXP             shift and go to state 23
+    MULTIPLY        shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+    EQ              shift and go to state 54
+    NEQ             shift and go to state 55
+    LSS             shift and go to state 56
+    GTR             shift and go to state 57
+    LEQ             shift and go to state 58
+    GEQ             shift and go to state 59
+    AND             shift and go to state 60
+    OR              shift and go to state 61
+
+    boolop                         shift and go to state 62
+
+state 47
+
+    (28) if -> IF OPENPAR bool . CLOSEPAR block else
+    (29) if -> IF OPENPAR bool . CLOSEPAR block
+    (17) bool -> bool . boolop bool
+    (19) bool -> bool . boolop expression
+    (20) boolop -> . EQ
+    (21) boolop -> . NEQ
+    (22) boolop -> . LSS
+    (23) boolop -> . GTR
+    (24) boolop -> . LEQ
+    (25) boolop -> . GEQ
+    (26) boolop -> . AND
+    (27) boolop -> . OR
+
+    CLOSEPAR        shift and go to state 63
+    EQ              shift and go to state 54
+    NEQ             shift and go to state 55
+    LSS             shift and go to state 56
+    GTR             shift and go to state 57
+    LEQ             shift and go to state 58
+    GEQ             shift and go to state 59
+    AND             shift and go to state 60
+    OR              shift and go to state 61
+
+    boolop                         shift and go to state 53
+
+state 48
+
+    (7) io -> inputoutput OPENPAR iodata CLOSEPAR .
+
+    EOL             reduce using rule 7 (io -> inputoutput OPENPAR iodata CLOSEPAR .)
+
+
+state 49
+
+    (11) iodata -> QUOTEMARK percenttype . QUOTEMARK COMMA AND NAME
+
+    QUOTEMARK       shift and go to state 64
+
+
+state 50
+
+    (12) percenttype -> PERCENTFLOAT .
+
+    QUOTEMARK       reduce using rule 12 (percenttype -> PERCENTFLOAT .)
+
+
+state 51
+
+    (13) percenttype -> PERCENTINT .
+
+    QUOTEMARK       reduce using rule 13 (percenttype -> PERCENTINT .)
+
+
+state 52
+
+    (31) while -> WHILE OPENPAR bool CLOSEPAR . block
+    (32) block -> . OPENCURL while CLOSECURL
+    (33) block -> . OPENCURL if CLOSECURL
+    (34) block -> . OPENCURL bcode CLOSECURL
+
+    OPENCURL        shift and go to state 66
+
+    block                          shift and go to state 65
+
+state 53
+
+    (17) bool -> bool boolop . bool
+    (19) bool -> bool boolop . expression
+    (16) bool -> . expression boolop expression
+    (17) bool -> . bool boolop bool
+    (18) bool -> . expression boolop bool
+    (19) bool -> . bool boolop expression
+    (38) expression -> . expression EXP expression
+    (39) expression -> . expression MULTIPLY expression
+    (40) expression -> . expression DIVIDE expression
+    (41) expression -> . expression PLUS expression
+    (42) expression -> . expression MINUS expression
+    (43) expression -> . OPENPAR expression CLOSEPAR
+    (51) expression -> . NAME EQUALS expression
+    (52) expression -> . NAME EQUALS NAME
+    (53) expression -> . INT
+    (54) expression -> . FLOAT
+
+    OPENPAR         shift and go to state 11
+    NAME            shift and go to state 9
+    INT             shift and go to state 12
+    FLOAT           shift and go to state 13
+
+    bool                           shift and go to state 67
+    expression                     shift and go to state 68
+
+state 54
+
+    (20) boolop -> EQ .
+
+    OPENPAR         reduce using rule 20 (boolop -> EQ .)
+    NAME            reduce using rule 20 (boolop -> EQ .)
+    INT             reduce using rule 20 (boolop -> EQ .)
+    FLOAT           reduce using rule 20 (boolop -> EQ .)
+
+
+state 55
+
+    (21) boolop -> NEQ .
+
+    OPENPAR         reduce using rule 21 (boolop -> NEQ .)
+    NAME            reduce using rule 21 (boolop -> NEQ .)
+    INT             reduce using rule 21 (boolop -> NEQ .)
+    FLOAT           reduce using rule 21 (boolop -> NEQ .)
+
+
+state 56
+
+    (22) boolop -> LSS .
+
+    OPENPAR         reduce using rule 22 (boolop -> LSS .)
+    NAME            reduce using rule 22 (boolop -> LSS .)
+    INT             reduce using rule 22 (boolop -> LSS .)
+    FLOAT           reduce using rule 22 (boolop -> LSS .)
+
+
+state 57
+
+    (23) boolop -> GTR .
+
+    OPENPAR         reduce using rule 23 (boolop -> GTR .)
+    NAME            reduce using rule 23 (boolop -> GTR .)
+    INT             reduce using rule 23 (boolop -> GTR .)
+    FLOAT           reduce using rule 23 (boolop -> GTR .)
+
+
+state 58
+
+    (24) boolop -> LEQ .
+
+    OPENPAR         reduce using rule 24 (boolop -> LEQ .)
+    NAME            reduce using rule 24 (boolop -> LEQ .)
+    INT             reduce using rule 24 (boolop -> LEQ .)
+    FLOAT           reduce using rule 24 (boolop -> LEQ .)
+
+
+state 59
+
+    (25) boolop -> GEQ .
+
+    OPENPAR         reduce using rule 25 (boolop -> GEQ .)
+    NAME            reduce using rule 25 (boolop -> GEQ .)
+    INT             reduce using rule 25 (boolop -> GEQ .)
+    FLOAT           reduce using rule 25 (boolop -> GEQ .)
+
+
+state 60
+
+    (26) boolop -> AND .
+
+    OPENPAR         reduce using rule 26 (boolop -> AND .)
+    NAME            reduce using rule 26 (boolop -> AND .)
+    INT             reduce using rule 26 (boolop -> AND .)
+    FLOAT           reduce using rule 26 (boolop -> AND .)
+
+
+state 61
+
+    (27) boolop -> OR .
+
+    OPENPAR         reduce using rule 27 (boolop -> OR .)
+    NAME            reduce using rule 27 (boolop -> OR .)
+    INT             reduce using rule 27 (boolop -> OR .)
+    FLOAT           reduce using rule 27 (boolop -> OR .)
+
+
+state 62
+
+    (16) bool -> expression boolop . expression
+    (18) bool -> expression boolop . bool
+    (38) expression -> . expression EXP expression
+    (39) expression -> . expression MULTIPLY expression
+    (40) expression -> . expression DIVIDE expression
+    (41) expression -> . expression PLUS expression
+    (42) expression -> . expression MINUS expression
+    (43) expression -> . OPENPAR expression CLOSEPAR
+    (51) expression -> . NAME EQUALS expression
+    (52) expression -> . NAME EQUALS NAME
+    (53) expression -> . INT
+    (54) expression -> . FLOAT
+    (16) bool -> . expression boolop expression
+    (17) bool -> . bool boolop bool
+    (18) bool -> . expression boolop bool
+    (19) bool -> . bool boolop expression
+
+    OPENPAR         shift and go to state 11
+    NAME            shift and go to state 9
+    INT             shift and go to state 12
+    FLOAT           shift and go to state 13
+
+    expression                     shift and go to state 69
+    bool                           shift and go to state 70
+
+state 63
+
+    (28) if -> IF OPENPAR bool CLOSEPAR . block else
+    (29) if -> IF OPENPAR bool CLOSEPAR . block
+    (32) block -> . OPENCURL while CLOSECURL
+    (33) block -> . OPENCURL if CLOSECURL
+    (34) block -> . OPENCURL bcode CLOSECURL
+
+    OPENCURL        shift and go to state 66
+
+    block                          shift and go to state 71
+
+state 64
+
+    (11) iodata -> QUOTEMARK percenttype QUOTEMARK . COMMA AND NAME
+
+    COMMA           shift and go to state 72
+
+
+state 65
+
+    (31) while -> WHILE OPENPAR bool CLOSEPAR block .
+
+    $end            reduce using rule 31 (while -> WHILE OPENPAR bool CLOSEPAR block .)
+    CLOSECURL       reduce using rule 31 (while -> WHILE OPENPAR bool CLOSEPAR block .)
+
+
+state 66
+
+    (32) block -> OPENCURL . while CLOSECURL
+    (33) block -> OPENCURL . if CLOSECURL
+    (34) block -> OPENCURL . bcode CLOSECURL
+    (31) while -> . WHILE OPENPAR bool CLOSEPAR block
+    (28) if -> . IF OPENPAR bool CLOSEPAR block else
+    (29) if -> . IF OPENPAR bool CLOSEPAR block
+    (35) bcode -> . io EOL
+    (36) bcode -> . expression EOL
+    (37) bcode -> . empty
+    (7) io -> . inputoutput OPENPAR iodata CLOSEPAR
+    (8) io -> . inputoutput error
+    (38) expression -> . expression EXP expression
+    (39) expression -> . expression MULTIPLY expression
+    (40) expression -> . expression DIVIDE expression
+    (41) expression -> . expression PLUS expression
+    (42) expression -> . expression MINUS expression
+    (43) expression -> . OPENPAR expression CLOSEPAR
+    (51) expression -> . NAME EQUALS expression
+    (52) expression -> . NAME EQUALS NAME
+    (53) expression -> . INT
+    (54) expression -> . FLOAT
+    (55) empty -> .
+    (9) inputoutput -> . INPUT
+    (10) inputoutput -> . OUTPUT
+
+    WHILE           shift and go to state 14
+    IF              shift and go to state 15
+    OPENPAR         shift and go to state 11
+    NAME            shift and go to state 9
+    INT             shift and go to state 12
+    FLOAT           shift and go to state 13
+    CLOSECURL       reduce using rule 55 (empty -> .)
+    INPUT           shift and go to state 18
+    OUTPUT          shift and go to state 19
+
+    while                          shift and go to state 73
+    if                             shift and go to state 74
+    bcode                          shift and go to state 75
+    io                             shift and go to state 76
+    expression                     shift and go to state 77
+    empty                          shift and go to state 78
+    inputoutput                    shift and go to state 10
+
+state 67
+
+    (17) bool -> bool boolop bool .
+    (17) bool -> bool . boolop bool
+    (19) bool -> bool . boolop expression
+    (20) boolop -> . EQ
+    (21) boolop -> . NEQ
+    (22) boolop -> . LSS
+    (23) boolop -> . GTR
+    (24) boolop -> . LEQ
+    (25) boolop -> . GEQ
+    (26) boolop -> . AND
+    (27) boolop -> . OR
+
+  ! shift/reduce conflict for EQ resolved as shift
+  ! shift/reduce conflict for NEQ resolved as shift
+  ! shift/reduce conflict for LSS resolved as shift
+  ! shift/reduce conflict for GTR resolved as shift
+  ! shift/reduce conflict for LEQ resolved as shift
+  ! shift/reduce conflict for GEQ resolved as shift
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    CLOSEPAR        reduce using rule 17 (bool -> bool boolop bool .)
+    EQ              shift and go to state 54
+    NEQ             shift and go to state 55
+    LSS             shift and go to state 56
+    GTR             shift and go to state 57
+    LEQ             shift and go to state 58
+    GEQ             shift and go to state 59
+    AND             shift and go to state 60
+    OR              shift and go to state 61
+
+  ! EQ              [ reduce using rule 17 (bool -> bool boolop bool .) ]
+  ! NEQ             [ reduce using rule 17 (bool -> bool boolop bool .) ]
+  ! LSS             [ reduce using rule 17 (bool -> bool boolop bool .) ]
+  ! GTR             [ reduce using rule 17 (bool -> bool boolop bool .) ]
+  ! LEQ             [ reduce using rule 17 (bool -> bool boolop bool .) ]
+  ! GEQ             [ reduce using rule 17 (bool -> bool boolop bool .) ]
+  ! AND             [ reduce using rule 17 (bool -> bool boolop bool .) ]
+  ! OR              [ reduce using rule 17 (bool -> bool boolop bool .) ]
+
+    boolop                         shift and go to state 53
+
+state 68
+
+    (19) bool -> bool boolop expression .
+    (16) bool -> expression . boolop expression
+    (18) bool -> expression . boolop bool
+    (38) expression -> expression . EXP expression
+    (39) expression -> expression . MULTIPLY expression
+    (40) expression -> expression . DIVIDE expression
+    (41) expression -> expression . PLUS expression
+    (42) expression -> expression . MINUS expression
+    (20) boolop -> . EQ
+    (21) boolop -> . NEQ
+    (22) boolop -> . LSS
+    (23) boolop -> . GTR
+    (24) boolop -> . LEQ
+    (25) boolop -> . GEQ
+    (26) boolop -> . AND
+    (27) boolop -> . OR
+
+  ! shift/reduce conflict for EQ resolved as shift
+  ! shift/reduce conflict for NEQ resolved as shift
+  ! shift/reduce conflict for LSS resolved as shift
+  ! shift/reduce conflict for GTR resolved as shift
+  ! shift/reduce conflict for LEQ resolved as shift
+  ! shift/reduce conflict for GEQ resolved as shift
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    CLOSEPAR        reduce using rule 19 (bool -> bool boolop expression .)
+    EXP             shift and go to state 23
+    MULTIPLY        shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+    EQ              shift and go to state 54
+    NEQ             shift and go to state 55
+    LSS             shift and go to state 56
+    GTR             shift and go to state 57
+    LEQ             shift and go to state 58
+    GEQ             shift and go to state 59
+    AND             shift and go to state 60
+    OR              shift and go to state 61
+
+  ! EQ              [ reduce using rule 19 (bool -> bool boolop expression .) ]
+  ! NEQ             [ reduce using rule 19 (bool -> bool boolop expression .) ]
+  ! LSS             [ reduce using rule 19 (bool -> bool boolop expression .) ]
+  ! GTR             [ reduce using rule 19 (bool -> bool boolop expression .) ]
+  ! LEQ             [ reduce using rule 19 (bool -> bool boolop expression .) ]
+  ! GEQ             [ reduce using rule 19 (bool -> bool boolop expression .) ]
+  ! AND             [ reduce using rule 19 (bool -> bool boolop expression .) ]
+  ! OR              [ reduce using rule 19 (bool -> bool boolop expression .) ]
+
+    boolop                         shift and go to state 62
+
+state 69
+
+    (16) bool -> expression boolop expression .
+    (38) expression -> expression . EXP expression
+    (39) expression -> expression . MULTIPLY expression
+    (40) expression -> expression . DIVIDE expression
+    (41) expression -> expression . PLUS expression
+    (42) expression -> expression . MINUS expression
+    (16) bool -> expression . boolop expression
+    (18) bool -> expression . boolop bool
+    (20) boolop -> . EQ
+    (21) boolop -> . NEQ
+    (22) boolop -> . LSS
+    (23) boolop -> . GTR
+    (24) boolop -> . LEQ
+    (25) boolop -> . GEQ
+    (26) boolop -> . AND
+    (27) boolop -> . OR
+
+  ! shift/reduce conflict for EQ resolved as shift
+  ! shift/reduce conflict for NEQ resolved as shift
+  ! shift/reduce conflict for LSS resolved as shift
+  ! shift/reduce conflict for GTR resolved as shift
+  ! shift/reduce conflict for LEQ resolved as shift
+  ! shift/reduce conflict for GEQ resolved as shift
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    CLOSEPAR        reduce using rule 16 (bool -> expression boolop expression .)
+    EXP             shift and go to state 23
+    MULTIPLY        shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+    EQ              shift and go to state 54
+    NEQ             shift and go to state 55
+    LSS             shift and go to state 56
+    GTR             shift and go to state 57
+    LEQ             shift and go to state 58
+    GEQ             shift and go to state 59
+    AND             shift and go to state 60
+    OR              shift and go to state 61
+
+  ! EQ              [ reduce using rule 16 (bool -> expression boolop expression .) ]
+  ! NEQ             [ reduce using rule 16 (bool -> expression boolop expression .) ]
+  ! LSS             [ reduce using rule 16 (bool -> expression boolop expression .) ]
+  ! GTR             [ reduce using rule 16 (bool -> expression boolop expression .) ]
+  ! LEQ             [ reduce using rule 16 (bool -> expression boolop expression .) ]
+  ! GEQ             [ reduce using rule 16 (bool -> expression boolop expression .) ]
+  ! AND             [ reduce using rule 16 (bool -> expression boolop expression .) ]
+  ! OR              [ reduce using rule 16 (bool -> expression boolop expression .) ]
+
+    boolop                         shift and go to state 62
+
+state 70
+
+    (18) bool -> expression boolop bool .
+    (17) bool -> bool . boolop bool
+    (19) bool -> bool . boolop expression
+    (20) boolop -> . EQ
+    (21) boolop -> . NEQ
+    (22) boolop -> . LSS
+    (23) boolop -> . GTR
+    (24) boolop -> . LEQ
+    (25) boolop -> . GEQ
+    (26) boolop -> . AND
+    (27) boolop -> . OR
+
+  ! shift/reduce conflict for EQ resolved as shift
+  ! shift/reduce conflict for NEQ resolved as shift
+  ! shift/reduce conflict for LSS resolved as shift
+  ! shift/reduce conflict for GTR resolved as shift
+  ! shift/reduce conflict for LEQ resolved as shift
+  ! shift/reduce conflict for GEQ resolved as shift
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    CLOSEPAR        reduce using rule 18 (bool -> expression boolop bool .)
+    EQ              shift and go to state 54
+    NEQ             shift and go to state 55
+    LSS             shift and go to state 56
+    GTR             shift and go to state 57
+    LEQ             shift and go to state 58
+    GEQ             shift and go to state 59
+    AND             shift and go to state 60
+    OR              shift and go to state 61
+
+  ! EQ              [ reduce using rule 18 (bool -> expression boolop bool .) ]
+  ! NEQ             [ reduce using rule 18 (bool -> expression boolop bool .) ]
+  ! LSS             [ reduce using rule 18 (bool -> expression boolop bool .) ]
+  ! GTR             [ reduce using rule 18 (bool -> expression boolop bool .) ]
+  ! LEQ             [ reduce using rule 18 (bool -> expression boolop bool .) ]
+  ! GEQ             [ reduce using rule 18 (bool -> expression boolop bool .) ]
+  ! AND             [ reduce using rule 18 (bool -> expression boolop bool .) ]
+  ! OR              [ reduce using rule 18 (bool -> expression boolop bool .) ]
+
+    boolop                         shift and go to state 53
+
+state 71
+
+    (28) if -> IF OPENPAR bool CLOSEPAR block . else
+    (29) if -> IF OPENPAR bool CLOSEPAR block .
+    (30) else -> . ELSE block
+
+    $end            reduce using rule 29 (if -> IF OPENPAR bool CLOSEPAR block .)
+    CLOSECURL       reduce using rule 29 (if -> IF OPENPAR bool CLOSEPAR block .)
+    ELSE            shift and go to state 80
+
+    else                           shift and go to state 79
+
+state 72
+
+    (11) iodata -> QUOTEMARK percenttype QUOTEMARK COMMA . AND NAME
+
+    AND             shift and go to state 81
+
+
+state 73
+
+    (32) block -> OPENCURL while . CLOSECURL
+
+    CLOSECURL       shift and go to state 82
+
+
+state 74
+
+    (33) block -> OPENCURL if . CLOSECURL
+
+    CLOSECURL       shift and go to state 83
+
+
+state 75
+
+    (34) block -> OPENCURL bcode . CLOSECURL
+
+    CLOSECURL       shift and go to state 84
+
+
+state 76
+
+    (35) bcode -> io . EOL
+
+    EOL             shift and go to state 85
+
+
+state 77
+
+    (36) bcode -> expression . EOL
+    (38) expression -> expression . EXP expression
+    (39) expression -> expression . MULTIPLY expression
+    (40) expression -> expression . DIVIDE expression
+    (41) expression -> expression . PLUS expression
+    (42) expression -> expression . MINUS expression
+
+    EOL             shift and go to state 86
+    EXP             shift and go to state 23
+    MULTIPLY        shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+
+
+state 78
+
+    (37) bcode -> empty .
+
+    CLOSECURL       reduce using rule 37 (bcode -> empty .)
+
+
+state 79
+
+    (28) if -> IF OPENPAR bool CLOSEPAR block else .
+
+    $end            reduce using rule 28 (if -> IF OPENPAR bool CLOSEPAR block else .)
+    CLOSECURL       reduce using rule 28 (if -> IF OPENPAR bool CLOSEPAR block else .)
+
+
+state 80
+
+    (30) else -> ELSE . block
+    (32) block -> . OPENCURL while CLOSECURL
+    (33) block -> . OPENCURL if CLOSECURL
+    (34) block -> . OPENCURL bcode CLOSECURL
+
+    OPENCURL        shift and go to state 66
+
+    block                          shift and go to state 87
+
+state 81
+
+    (11) iodata -> QUOTEMARK percenttype QUOTEMARK COMMA AND . NAME
+
+    NAME            shift and go to state 88
+
+
+state 82
+
+    (32) block -> OPENCURL while CLOSECURL .
+
+    $end            reduce using rule 32 (block -> OPENCURL while CLOSECURL .)
+    CLOSECURL       reduce using rule 32 (block -> OPENCURL while CLOSECURL .)
+    ELSE            reduce using rule 32 (block -> OPENCURL while CLOSECURL .)
+
+
+state 83
+
+    (33) block -> OPENCURL if CLOSECURL .
+
+    $end            reduce using rule 33 (block -> OPENCURL if CLOSECURL .)
+    CLOSECURL       reduce using rule 33 (block -> OPENCURL if CLOSECURL .)
+    ELSE            reduce using rule 33 (block -> OPENCURL if CLOSECURL .)
+
+
+state 84
+
+    (34) block -> OPENCURL bcode CLOSECURL .
+
+    $end            reduce using rule 34 (block -> OPENCURL bcode CLOSECURL .)
+    CLOSECURL       reduce using rule 34 (block -> OPENCURL bcode CLOSECURL .)
+    ELSE            reduce using rule 34 (block -> OPENCURL bcode CLOSECURL .)
+
+
+state 85
+
+    (35) bcode -> io EOL .
+
+    CLOSECURL       reduce using rule 35 (bcode -> io EOL .)
+
+
+state 86
+
+    (36) bcode -> expression EOL .
+
+    CLOSECURL       reduce using rule 36 (bcode -> expression EOL .)
+
+
+state 87
+
+    (30) else -> ELSE block .
+
+    $end            reduce using rule 30 (else -> ELSE block .)
+    CLOSECURL       reduce using rule 30 (else -> ELSE block .)
+
+
+state 88
+
+    (11) iodata -> QUOTEMARK percenttype QUOTEMARK COMMA AND NAME .
+
+    CLOSEPAR        reduce using rule 11 (iodata -> QUOTEMARK percenttype QUOTEMARK COMMA AND NAME .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for EXP in state 41 resolved as shift
+WARNING: shift/reduce conflict for MULTIPLY in state 41 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 41 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 41 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 41 resolved as shift
+WARNING: shift/reduce conflict for EQ in state 67 resolved as shift
+WARNING: shift/reduce conflict for NEQ in state 67 resolved as shift
+WARNING: shift/reduce conflict for LSS in state 67 resolved as shift
+WARNING: shift/reduce conflict for GTR in state 67 resolved as shift
+WARNING: shift/reduce conflict for LEQ in state 67 resolved as shift
+WARNING: shift/reduce conflict for GEQ in state 67 resolved as shift
+WARNING: shift/reduce conflict for AND in state 67 resolved as shift
+WARNING: shift/reduce conflict for OR in state 67 resolved as shift
+WARNING: shift/reduce conflict for EQ in state 68 resolved as shift
+WARNING: shift/reduce conflict for NEQ in state 68 resolved as shift
+WARNING: shift/reduce conflict for LSS in state 68 resolved as shift
+WARNING: shift/reduce conflict for GTR in state 68 resolved as shift
+WARNING: shift/reduce conflict for LEQ in state 68 resolved as shift
+WARNING: shift/reduce conflict for GEQ in state 68 resolved as shift
+WARNING: shift/reduce conflict for AND in state 68 resolved as shift
+WARNING: shift/reduce conflict for OR in state 68 resolved as shift
+WARNING: shift/reduce conflict for EQ in state 69 resolved as shift
+WARNING: shift/reduce conflict for NEQ in state 69 resolved as shift
+WARNING: shift/reduce conflict for LSS in state 69 resolved as shift
+WARNING: shift/reduce conflict for GTR in state 69 resolved as shift
+WARNING: shift/reduce conflict for LEQ in state 69 resolved as shift
+WARNING: shift/reduce conflict for GEQ in state 69 resolved as shift
+WARNING: shift/reduce conflict for AND in state 69 resolved as shift
+WARNING: shift/reduce conflict for OR in state 69 resolved as shift
+WARNING: shift/reduce conflict for EQ in state 70 resolved as shift
+WARNING: shift/reduce conflict for NEQ in state 70 resolved as shift
+WARNING: shift/reduce conflict for LSS in state 70 resolved as shift
+WARNING: shift/reduce conflict for GTR in state 70 resolved as shift
+WARNING: shift/reduce conflict for LEQ in state 70 resolved as shift
+WARNING: shift/reduce conflict for GEQ in state 70 resolved as shift
+WARNING: shift/reduce conflict for AND in state 70 resolved as shift
+WARNING: shift/reduce conflict for OR in state 70 resolved as shift

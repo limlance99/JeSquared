@@ -17,10 +17,12 @@ tokens = ['INT',    # Data Types: int and float
         'MINUS',
         'DIVIDE',
         'MULTIPLY',
-        'EXPONENT',
+        'EXP',
         'EQUALS',
         'OPENPAR', 
         'CLOSEPAR',
+        'OPENCURL',
+        'CLOSECURL',
         'EOL',      # End of Line
         'RETURN',   # Return from Function
         'MAIN'      
@@ -29,42 +31,45 @@ tokens = ['INT',    # Data Types: int and float
         'OUTPUT',
         'COMMA',
         'QUOTEMARK',
-        'AND'       # Logical Operators
-        'OR'    
-        'NOT'
-        'EQ'        # Comparison Operators
-        'NEQ'
-        'LSS'
-        'GTR'
-        'LEQ'
-        'GEQ'
-        'IF'       # Conditionals and Iterators
-        'THEN'
-        'ELSE'
-        'WHILE'
-        'FOR'
+        'AND',       # Logical Operators
+        'OR',    
+        'NOT',
+        'EQ',        # Comparison Operators
+        'NEQ',
+        'LSS',
+        'GTR',
+        'LEQ',
+        'GEQ',
+        'IF',       # Conditionals and Iterators
+        'THEN',
+        'ELSE',
+        'WHILE',
+        'FOR',
         'TO'
         ] 
 t_PLUS = r'\+'
 t_MINUS = r'\-'
 t_MULTIPLY = r'\*'
 t_DIVIDE = r'\/'
-t_EXPONENT = r'\^'
-t_EQ = r'\=\='
-t_NEQ = r'\!\='
+t_EXP = r'\^'
+t_EQ = r'=='
+t_NEQ = r'!='
 t_LSS = r'\<'
 t_GTR = r'\>'
-t_LEQ = r'\<\='
-t_GEQ = r'\>\='
+t_LEQ = r'<='
+t_GEQ = r'>='
 t_EQUALS = r'\='
 t_OPENPAR = r'\('
 t_CLOSEPAR = r'\)'
+t_OPENCURL = r'\{'
+t_CLOSECURL = r'\}'
 t_COMMA = r'\,'
 t_QUOTEMARK = r'\"'
-t_AND = r'\&\&'
+t_AND = r'&&'
 t_OR = r'\|\|'
 t_NOT = r'\!'
-t_ignore = r' '
+t_ignore = ' \t'
+
 def t_INT(t):
     r'\d+'
     t.value = int(t.value)
@@ -83,9 +88,9 @@ def t_TYPEINT(t):
 def t_TYPEFLOAT(t):
     r'lut4n6'
     return t
-def t_TYPESTRING(t):
-    r't471'
-    return t
+# def t_TYPESTRING(t):
+#     r't471'
+#     return t
 def t_PERCENTINT(t):
     r'%d'
     return t
@@ -114,32 +119,36 @@ def t_OUTPUT(t):
     r'l4b45'
     return t
 def t_IF(t):
-    r'k4p46'
+    r'kUn6'
     return t
-def t_THEN(t):
-    r's4k4'
-    return t
+# def t_THEN(t):
+#     r's4k4'
+#     return t
 def t_ELSE(t):
     r'3d1'
     return t
 def t_WHILE(t):
     r'h4b4n6'
     return t
-def t_FOR(t):
-    r'p4r4'
-    return t
-def t_TO(t):
-    r'h4n664n6'
-    return t
+# def t_FOR(t):
+#     r'k4p46'
+#     return t
+# def t_TO(t):
+#     r'h4n664n6'
+#     return t
 def t_error(t):
-    print("Line %d: Illegal Character '%s' " %(lineCount, t.value[0]))
+    print("Line %d: Illegal Character '%s' " %(lineCount, t))
     t.lexer.skip(len(t.value))
+
+def t_newline(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
 
 
 lexer = lex.lex()
 precedence = (  # PEMDAS => Comparison Operators => Logical Operators
-    ('right','NOT')         
-    ('left','AND','OR')
+    ('right','NOT'),        
+    ('left','AND','OR'),
     ('left','EQ','NEQ','LSS','GTR','LEQ','GEQ'),
     ('left', 'PLUS', 'MINUS'),
     ('left','MULTIPLY' ,'DIVIDE'),
@@ -147,15 +156,18 @@ precedence = (  # PEMDAS => Comparison Operators => Logical Operators
 )
 
 # Grammar Rules
-def p_code(p):
+def p_code(p): #START
     '''
     code : vardeclare EOL 
         | io EOL
         | expression EOL
+        | while 
+        | if
         | empty
     '''
     p[0] = p[1]
     print(p[1])
+
 def p_io(p):
     '''
     io : inputoutput OPENPAR iodata CLOSEPAR
@@ -187,28 +199,69 @@ def p_datatype(p):
              | TYPEINT
     '''
     p[0] = p[1]
-def p_if_statement(p):
+
+def p_bool(p):
     '''
-    if_statement: IF expression THEN expression ELSE expression
-                | IF expression THEN expression 
+    bool : expression boolop expression
+         | bool boolop bool
+         | expression boolop bool
+         | bool boolop expression
+    '''
+    p[0] = (p[2],p[1],p[3])
+
+def p_boolop(p):
+    '''
+    boolop : EQ
+           | NEQ
+           | LSS
+           | GTR
+           | LEQ
+           | GEQ
+           | AND
+           | OR
+    '''
+    p[0] = p[1]  
+def p_if(p):
+    '''
+    if : IF OPENPAR bool CLOSEPAR block else
+       | IF OPENPAR bool CLOSEPAR block 
     '''
     if p[6] is not None:
-        p[0]=('if_else',p[2], p[4], p[6])
+        p[0]=('if_else',p[3], p[5], p[6])
     else:
-        p[0]=('if',p[2], p[4])
+        p[0]=('if',p[3], p[5])
     
-def p_while_statement(p):
+def p_else(p):
     '''
-    while_statement: WHILE OPENPAR expression CLOSEPAR expression
+    else : ELSE block
+    '''
+    p[0] = p[2]
+
+def p_while(p):
+    '''
+    while : WHILE OPENPAR bool CLOSEPAR block
 
     '''
     p[0]=('while',p[3],p[5])
-def p_for_statement(p):
-    '''
-    for_statement: FOR expression TO expression OPENPAR expression CLOSEPAR
 
+def p_block(p): #control block (while, if-else, regular statements)
     '''
-    p[0]=('for',p[2],p[4],p[6])
+    block : OPENCURL while CLOSECURL
+        |   OPENCURL if CLOSECURL
+        |   OPENCURL bcode CLOSECURL
+    '''
+    p[0] = p[2]
+
+def p_bcode(p): #NESTED REGULAR STATEMENTS
+    '''
+    bcode : io EOL
+        | expression EOL
+        | empty
+    '''
+    p[0] = p[1]
+    print(p[1])
+
+
 def p_expression_math(p):
     '''
     expression :  expression EXP expression
@@ -216,18 +269,20 @@ def p_expression_math(p):
                |  expression DIVIDE expression
                |  expression PLUS expression
                |  expression MINUS expression
-               |  expression EQ expression
-               |  expression NEQ expression
-               |  expression LSS expression
-               |  expression GTR expression
-               |  expression LEQ expression
-               |  expression GEQ expression
-               |  expression AND expression
-               |  expression OR expression
                |  OPENPAR expression CLOSEPAR
     '''
     p[0] = (p[2],p[1],p[3])
 
+def p_oper(p):
+    '''
+    oper :  EXP
+         |  MULTIPLY
+         |  DIVIDE
+         |  PLUS
+         |  MINUS
+         |  EQUALS 
+    '''
+    p[0] = p[1]
 def p_vardeclare(p):   #declare a variable  
     '''
     vardeclare : datatype NAME
@@ -257,7 +312,6 @@ def p_expression_int_float(p):
     '''
     expression  : INT
                 | FLOAT
-                | STRING
     '''
     p[0] = p[1]
 def p_empty(p):       
