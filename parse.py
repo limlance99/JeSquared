@@ -2,7 +2,6 @@ import ply.lex as lex
 import ply.yacc as yacc
 import sys
 
-lineCount = 1
 
 tokens = ['INT',    # Data Types: int and float
         'FLOAT',
@@ -25,7 +24,8 @@ tokens = ['INT',    # Data Types: int and float
         'CLOSECURL',
         'EOL',      # End of Line
         'RETURN',   # Return from Function
-        'MAIN'      
+        'MAIN',
+        'FNAME',      
         'COMMENT',  # Comments
         'INPUT',    # Input Function Only Accepts One Character at a Time
         'OUTPUT',
@@ -40,13 +40,16 @@ tokens = ['INT',    # Data Types: int and float
         'GTR',
         'LEQ',
         'GEQ',
+        #RESERVED
         'IF',       # Conditionals and Iterators
         'THEN',
         'ELSE',
         'WHILE',
         'FOR',
-        'TO'
-        ] 
+        'TO',
+        'NEWLINE',
+        'BREAK'
+] 
 t_PLUS = r'\+'
 t_MINUS = r'\-'
 t_MULTIPLY = r'\*'
@@ -100,8 +103,14 @@ def t_PERCENTFLOAT(t):
 def t_NAME(t):
     r'j3j3[a-zA-Z_][a-zA-Z_0-9]*' 
     return t
+def t_FNAME(t):
+    r'[a-zA-Z_][a-zA-Z_0-9]*m0n'
+    return t
 def t_EOL(t):
     r'p0h'
+    return t
+def t_BREAK(t):
+    r's1r4'
     return t
 def t_RETURN(t):
     r'b471k'
@@ -121,9 +130,6 @@ def t_OUTPUT(t):
 def t_IF(t):
     r'kUn6'
     return t
-# def t_THEN(t):
-#     r's4k4'
-#     return t
 def t_ELSE(t):
     r'ed1'
     return t
@@ -136,13 +142,13 @@ def t_WHILE(t):
 # def t_TO(t):
 #     r'h4n664n6'
 #     return t
-def t_error(t):
-    print("Line %d: Illegal Character '%s' " %(lineCount, t))
-    t.lexer.skip(len(t.value))
-
-def t_newline(t):
+def t_NEWLINE(t):
     r'\n+'
-    t.lexer.lineno += t.value.count('\n')
+    t.lexer.lineno += t.value.count("\n")
+
+def t_error(t):
+    print("Line hdsafadsf: Illegal Character '%s' " %t)
+    t.lexer.skip(1)
 
 
 lexer = lex.lex()
@@ -156,13 +162,48 @@ precedence = (  # PEMDAS => Comparison Operators => Logical Operators
 )
 
 # Grammar Rules
-def p_code(p): #START
+
+def p_begin(p):#START 
     '''
-    code : vardeclare EOL 
-        | io EOL
-        | expression EOL
-        | while 
-        | if
+    begin : function
+    '''
+    p[0] = p[1]
+
+def p_function(p):
+    '''
+    function : function funcname OPENCURL code RETURN expression EOL CLOSECURL 
+             | empty
+    '''
+    # CHECK DATA TYPE OF EXPRESSION 
+
+    if len(p) > 2:
+        p[0] = (p[2], p[4])
+    else:
+        p[0] = p[1]
+def p_funcname(p):
+    '''
+    funcname : datatype FNAME OPENPAR parameters CLOSEPAR 
+    '''
+    p[0] = (id(p[1]), p[4])
+
+def p_parameters(p):
+    '''
+    parameters : vardeclare COMMA parameters
+                | vardeclare
+                | empty
+    '''
+    if len(p) > 2:
+        p[0] = (p[1], p[3])
+    else:
+        p[0] = p[1]
+
+def p_code(p): 
+    '''
+    code : code vardeclare EOL 
+        | code io EOL
+        | code expression EOL
+        | code while 
+        | code if
         | empty
     '''
     p[0] = p[1]
@@ -254,8 +295,9 @@ def p_block(p): #control block (while, if-else, regular statements)
 
 def p_bcode(p): #NESTED REGULAR STATEMENTS
     '''
-    bcode : io EOL
-        | expression EOL
+    bcode : bcode io EOL
+        | bcode expression EOL
+        | bcode BREAK EOL
         | empty
     '''
     p[0] = p[1]
@@ -290,6 +332,24 @@ def p_vardeclare(p):   #declare a variable
     global env
     p[0] = ('var', id(p[1]),p[2])   #to add:if p in varlist??
     env[p[2]] = -1                  #default value of -1
+
+def p_expression_function(p):
+    '''
+    expression : FNAME OPENPAR varname CLOSEPAR 
+    '''
+    p[0] = (p[1], p[3])
+
+def p_varname(p):
+    '''
+    varname : NAME COMMA varname
+            | NAME
+            | empty
+    '''
+    if len(p) > 2:
+        p[0] = (p[1], p[3])
+    else:
+        p[0] = p[1]
+        
 def p_expression_var_assign(p):
     '''
     expression : NAME EQUALS expression
@@ -312,7 +372,9 @@ def p_expression_int_float(p):
     '''
     expression  : INT
                 | FLOAT
+                | NAME
     '''
+    # CHECK IF DECLARED ALREADY
     p[0] = p[1]
 def p_empty(p):       
     '''
@@ -320,7 +382,7 @@ def p_empty(p):
     '''
     p[0] = None
 def p_error(p): # Error Handling [IN PROGRESS]
-    print('Line %d: Syntax error in input' %lineCount)
+    print("Sytax error:", p)
     #look for terminating 'p0h'
     tok = parser.token()
     if not tok or tok.type == 'EOL': 
@@ -416,14 +478,17 @@ if(f == ""):        #testing for indiv statements
             break
         parser.parse(s)
 else:               #there's a legit file u wanna read
-    s = open(f + ".txt","r").read()
+    inp = open(f + ".txt","r")
     i = 0
-    try:
+    while 1:
+        try:
+            s = inp.read()
+            if s == "":
+                break
+        except EOFError:
+            print("Done reading File.")
+            break
         parser.parse(s)
-    except EOFError:
-        print("Done reading File.")
-
-    lineCount += 1
 
         
 
