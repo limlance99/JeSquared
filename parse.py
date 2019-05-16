@@ -461,9 +461,6 @@ if type(p) == tuple:
     elif p[0] == 'while':
         while (run[p1]):
             run(p[2])
-    elif p[0] == 'for':
-        for i in range (run([p1]),run(p[2])):
-            run(p[3])
     elif p[0] == 'var':
         if p[1] not in env:
             return p[1] + " : Undeclared Variable"
