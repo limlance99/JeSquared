@@ -5,10 +5,8 @@ import sys
 
 tokens = ['INT',    # Data Types: int and float
         'FLOAT',
-        'STRING',
         'TYPEINT',
         'TYPEFLOAT',
-        'TYPESTRING',
         'PERCENTINT',
         'PERCENTFLOAT',
         'NAME',     # Variable Name
@@ -24,7 +22,6 @@ tokens = ['INT',    # Data Types: int and float
         'CLOSECURL',
         'EOL',      # End of Line
         'RETURN',   # Return from Function
-        'MAIN',
         'FNAME',      
         'COMMENT',  # Comments
         'INPUT',    # Input Function Only Accepts One Character at a Time
@@ -42,11 +39,8 @@ tokens = ['INT',    # Data Types: int and float
         'GEQ',
         #RESERVED
         'IF',       # Conditionals and Iterators
-        'THEN',
         'ELSE',
         'WHILE',
-        'FOR',
-        'TO',
         'NEWLINE',
         'BREAK'
 ] 
@@ -115,9 +109,6 @@ def t_BREAK(t):
 def t_RETURN(t):
     r'b471k'
     return t
-def t_MAIN(t):
-    r'l0d1'
-    return t
 def t_COMMENT(t):
     r'\$.*'
     pass           # It has no return value so discard the token.
@@ -136,12 +127,7 @@ def t_ELSE(t):
 def t_WHILE(t):
     r'h4b4n6'
     return t
-# def t_FOR(t):
-#     r'k4p46'
-#     return t
-# def t_TO(t):
-#     r'h4n664n6'
-#     return t
+
 def t_NEWLINE(t):
     r'\n+'
     t.lexer.lineno += t.value.count("\n")
@@ -169,22 +155,37 @@ def p_begin(p):#START
     begin : function
     '''
     p[0] = p[1]
+    # run(p[0])
 
 def p_function(p):
     '''
-    function : function funcname OPENCURL code RETURN expression EOL CLOSECURL 
+    function : function funcname OPENCURL code RETURN expression EOL funcend 
              | empty
     '''
     # CHECK DATA TYPE OF EXPRESSION 
+
 
     if len(p) > 2:
         p[0] = (p[2], p[4])
     else:
         p[0] = p[1]
+
+def p_funcend(p):
+    '''
+    funcend : CLOSECURL
+    '''
+    global VarStack
+    VarStack.pop()
+    p[0] = p[1]
+
 def p_funcname(p):
     '''
     funcname : datatype FNAME OPENPAR parameters CLOSEPAR 
     '''
+
+    global VarStack
+    VarStack.append({})
+    
     p[0] = (id(p[1]), p[4])
 
 def p_parameters(p):
@@ -230,6 +231,7 @@ def p_iodata(p): # "%d" , var OR "%f" , &var
     iodata : QUOTEMARK percenttype QUOTEMARK COMMA AND NAME
     '''
     p[0] = (p[2],p[6]) # check if %d/%f == NAME datatype
+
 def p_percenttype(p):
     '''
     percenttype : PERCENTFLOAT
@@ -249,8 +251,15 @@ def p_bool(p):
          | bool boolop bool
          | expression boolop bool
          | bool boolop expression
+         | NOT bool
+         | OPENPAR bool CLOSEPAR
     '''
-    p[0] = (p[2],p[1],p[3])
+    if p[1] == '(':
+        p[0] = p[2]
+    else if len(p) < 4:
+        p[0] = (p[1], p[2])
+    else:
+        p[0] = (p[2],p[1],p[3])
 
 def p_boolop(p):
     '''
@@ -331,9 +340,9 @@ def p_vardeclare(p):   #declare a variable
     '''
     vardeclare : datatype NAME
     '''
-    global env
+    global VarStack
     p[0] = ('var', id(p[1]),p[2])   #to add:if p in varlist??
-    env[p[2]] = -1                  #default value of -1
+    VarStack[-1][p[2]] = -1                  #default value of -1
     print(p[0])
 def p_varassign(p):
     '''
@@ -343,11 +352,11 @@ def p_varassign(p):
     # ERROR REMEMBER TO ADD THIS ERROR TO NOT COMPILE LIST
     p[0] = ('=', p[1],p[3])
     print(p[0])
-    """ if p[1] in env.keys():
-       
-    else:
-        print(p[1] + " not found in scope") 
-    """
+    # if p[1] in VarStack[-1]:
+    #     pass
+    # else:
+    #     print(p[1] + " not found in scope") 
+
 def p_expression_function(p):
     '''
     expression : FNAME OPENPAR varname CLOSEPAR 
@@ -398,82 +407,85 @@ def p_error(p): # Error Handling [IN PROGRESS]
 
 parser = yacc.yacc()
 
-env = {}
+VarStack = []
 # Executing Code
-""" 
+'''
 def run(p):
-global env
-global reserved
-if type(p) == tuple:
-    if p[0] == '+':
-        try: 
-            return run(p[1]) + run(p[2])
-        except TypeError:
-            print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
-    elif p[0] == '-':
-        try:
-            return run(p[1]) - run(p[2])
-        except TypeError:
-            print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
-    elif p[0] == '*':
-        try: 
-            return run(p[1]) * run(p[2])
-        except TypeError:
-            print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
-    elif p[0] == '/':
-        try: 
-            return run(p[1]) / run(p[2])
-        except TypeError:
-            print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
-        except ZeroDivisionError:
-            print("Division by 0.")
-    elif p[0] == '^':
-        try: 
-            return run(p[1])**run(p[2])
-        except TypeError:
-            print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
-    elif p[0] == '==':
-        return run(p[1]) == run(p[2])
-    elif p[0] == '!=':
-        return run(p[1]) != run(p[2])
-    elif p[0] == '<':
-        return run(p[1]) < run(p[2])
-    elif p[0] == '>':
-        return run(p[1]) > run(p[2])
-    elif p[0] == '<=':
-        return run(p[1]) <= run(p[2])
-    elif p[0] == '>=':
-        return run(p[1]) >= run(p[2])
-    elif p[0] == '&&':
-        return run(p[1]) and run(p[2])
-    elif p[0] == '||':
-        return run(p[1]) or run(p[2])
-    elif p[0] == '!':
-        return not run(p[1]) 
-    elif p[0] == 'if':
-        if run(p[1]) is True:
-            run(p[2])
-    elif p[0] == 'if_else':
-        if run(p[1]):
-            run(p[2])
-        else:
-            run(p[3])
-    elif p[0] == 'while':
-        while (run[p1]):
-            run(p[2])
-    elif p[0] == 'for':
-        for i in range (run([p1]),run(p[2])):
-            run(p[3])
-    elif p[0] == 'var':
-        if p[1] not in env:
-            return p[1] + " : Undeclared Variable"
-        return env[p[1]]
-    elif p[0] == '=':
-        env[p[1]] = run(p[2])
-        print(env)
-else:
-    return p 
-"""
+    global VarStack
+    global reserved
+    print(VarStack)
+    if type(p) == tuple:
+        if p[0] == '+':
+            try: 
+                return run(p[1]) + run(p[2])
+            except TypeError:
+                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
+        elif p[0] == '-':
+            try:
+                return run(p[1]) - run(p[2])
+            except TypeError:
+                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
+        elif p[0] == '*':
+            try: 
+                return run(p[1]) * run(p[2])
+            except TypeError:
+                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
+        elif p[0] == '/':
+            try: 
+                return run(p[1]) / run(p[2])
+            except TypeError:
+                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
+            except ZeroDivisionError:
+                print("Division by 0.")
+        elif p[0] == '^':
+            try: 
+                return run(p[1])**run(p[2])
+            except TypeError:
+                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
+        elif p[0] == '==':
+            return run(p[1]) == run(p[2])
+        elif p[0] == '!=':
+            return run(p[1]) != run(p[2])
+        elif p[0] == '<':
+            return run(p[1]) < run(p[2])
+        elif p[0] == '>':
+            return run(p[1]) > run(p[2])
+        elif p[0] == '<=':
+            return run(p[1]) <= run(p[2])
+        elif p[0] == '>=':
+            return run(p[1]) >= run(p[2])
+        elif p[0] == '&&':
+            return run(p[1]) and run(p[2])
+        elif p[0] == '||':
+            return run(p[1]) or run(p[2])
+        elif p[0] == '!':
+            return not run(p[1]) 
+        elif p[0] == 'if':
+            if run(p[1]) is True:
+                run(p[2])
+        elif p[0] == 'if_else':
+            if run(p[1]):
+                run(p[2])
+            else:
+                run(p[3])
+        elif p[0] == 'while':
+            while (run[p1]):
+                run(p[2])
+        elif p[0] == 'for':
+            for i in range (run([p1]),run(p[2])):
+                run(p[3])
+        elif p[0] == 'var':
+            if p[1] not in VarStack[-1]:
+                return p[1] + " : Undeclared Variable"
+            return VarStack[-1][p[1]]
+        elif p[0] == '=':
+            if p[1] not in VarStack[-1].keys():
+                return p[1] + " : Undeclared Variable"
+            else:
+                VarStack[-1][p[1]] = run(p[2])
+    else:
+        return p 
+'''
 f = input("Enter j3j3 File Name: ")
 if(f == ""):        #testing for indiv statements
     while True:

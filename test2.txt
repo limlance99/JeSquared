@@ -1,28 +1,10 @@
 $ this is a comment, '$' must be followed by a white space(easy parsing)
 
-b174n6 j3j3A p0h   $ this is a comment 
-b174n6 j3j3B p0h    $ error no p0h 
-
-kUn6 ( 5 < 6 ) { j3j3A = 5 + 6 p0h }
-
-kUn6 ( 5  < 6 ) {
-	j3j3A = 5 + 6 p0h
-} ed1 {
-	j3j3A = 7 p0h
+b174n6 l0d1m0n () {
+	$ b174n6 j3j3A p0h
+	j3j3A = 5 p0h
+	b471k 0 p0h
 }
-
-h4b4n6 ( j3j3A > 2 ) {
-
-	kUn6 ( 5  < 6 ) {
-		j3j3A = 5 + 6 p0h
-		j3j3B = 4 p0h
-	} ed1 {
-		j3j3A = 7 p0h
-		s1r4 p0h
-	}
-	
-}
-
 
 
 
