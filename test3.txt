@@ -4,11 +4,11 @@ b174n6 l0d1m0n () {
 	b174n6 j3j3B p0h
 	lut4n6 j3C p0h		$ this is wrong
 	3 + 4 p0h
-	j3j3B = 3 + 5 p0h
+	j3j3D = 3 + 5
 	kUn6 ( 3 > 5 ){
 		j3j3A = j3j3B p0h
 	}
-	b471k 0 p0h		$ this is wrong
+	b411k 0 p0h		$ this is wrong
 }
 
 b174n6 summ0n ( b174n6 j3j3X, b174n6 j3j3Y) {
