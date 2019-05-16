@@ -1,0 +1,18 @@
+b174n6 l0d1m0n () {
+	b174n6 j3j3A p0h
+	$ asdfjhfsadhfdj
+	b174n6 j3j3B p0h    $ this code has no errors afaik HAHAA 
+	lut4n6 j3C p0h
+	3 + 4 p0h
+	j3j3B = 3 + 5 p0h
+	kUn6 ( 3 > 5 ){
+		j3j3A = j3j3B p0h
+	}
+	b471k 0 p0h
+}
+
+b174n6 summ0n ( b174n6 j3j3X, b174n6 j3j3Y) {
+	b174n6 j3j3A p0h
+    j3j3A = 7 p0h
+	b471k j3j3X + j3j3Y p0h
+}

@@ -1,7 +1,8 @@
+import re 
 
 def translate(s):
     out = ''
-    s = s.split(" ")
+    s = s.split()
     print(s)
     for i in range (len(s)):
         if s[i] == "p0h\n" or s[i] =="p0h":
@@ -10,7 +11,7 @@ def translate(s):
             out+='//'
         elif s[i] == "b174n6":
             out+='int '
-        elif s[i] == "l0d1":
+        elif s[i] == "l0d1m0n":
             out+='main'
         elif s[i] == "lut4n6":
             out+='float'
@@ -22,6 +23,10 @@ def translate(s):
             out+='return '
         elif s[i] == 'h4b4n6':
             out+='while'
+        elif s[i] == 'kUn6':
+            out+='if'
+        elif s[i] == 'ed1':
+            out+= 'else'
         elif s[i] == '':
             out+= ' '
         else:
