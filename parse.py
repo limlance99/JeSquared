@@ -318,7 +318,7 @@ def p_expression_math(p):
     expression :  expression oper expression
                |  OPENPAR expression CLOSEPAR
     '''
-    p[0] = (p[2],p[1],p[3])
+    p[0] = (p[2],p[1],p[3],p.lexer.lineno)
     #print(p[0])
 
 def p_oper(p):
@@ -339,23 +339,22 @@ def p_vardeclare(p):   #declare a variable
     '''
     # global VarStack
     # VarStack[-1][p[2]] = -1                  #default value of -1
-    p[0] = ('var', id(p[1]),p[2])   #to add:if p in varlist??
+    p[0] = ('var', id(p[1]),p[2],p.lexer.lineno)   #to add:if p in varlist??
     #print(p[0])
 
 def p_varassign(p):
     '''
     varassign : NAME EQUALS expression
-               | NAME EQUALS NAME
     '''
     # ERROR REMEMBER TO ADD THIS ERROR TO NOT COMPILE LIST
-    p[0] = ('=', p[1],p[3])
+    p[0] = ('=', p[1],p[3],p.lexer.lineno)
     #print(p[0])
 
 def p_expression_function(p):
     '''
     expression : FNAME OPENPAR varname CLOSEPAR 
     '''
-    p[0] = ('funcall', p[1], p[3])
+    p[0] = ('funcall', p[1], p[3],p.lexer.lineno)
 
 def p_varname(p):
     '''
@@ -412,13 +411,13 @@ def run(p):
     if type(p) == tuple:
         if p[0] in '+-*^':
             if type(run(p[1])) != type(run(p[2])): 
-                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
+                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + "at line" + str(p[-1])+ ".")
             else:
                 return run(p[1]) + run(p[2])
 
         elif p[0] == '/':
             if type(run(p[1])) == int and type(run(p[2])) == float:
-                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
+                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] +"at line" + str(p[-1])+ ".")
             elif type(run(p[1])) == int and type(run(p[2])) == int: 
                 try: 
                     return run(p[1]) // run(p[2])
@@ -433,7 +432,7 @@ def run(p):
 
         elif p[0] == '%':
             if type(run(p[1])) != int or type(run(p[2])) != int:
-                print("Unsupported opeand type(s) for " + p[1] +" and " + p[2] + ".")
+                print("Unsupported opeand type(s) for " + p[1] +" and " + p[2] + "at line" + str(p[-1])+"." )
             else:
                 return run(p[1]) % run(p[2])
 
@@ -477,7 +476,7 @@ def run(p):
 
         elif p[0] == 'funcall':
             if p[1] not in FuncTypes.keys():
-                print("function", p[1], "has not yet been declared.")
+                print("function", p[1], "has not yet been declared. See line: ", p[-1])
             else:
                 run(p[2])
                 if FuncTypes[p[1]] == "INT":
@@ -506,7 +505,7 @@ def run(p):
 
         elif p[0] == '=':
             if p[1] not in VarStack[-1].keys():
-                print("Undeclared Variable", p[1])
+                print("Undeclared Variable",p[1], "at line", p[-1])
             else:
                 if type(VarStack[-1][p[1]]) != type(run(p[2])):
                     print("Cannot assign (different data type)")
