@@ -129,7 +129,11 @@ def t_NEWLINE(t):
 
 def t_error(t):
     print("Invalid token at line: ", t.lineno)
+<<<<<<< HEAD
+    # print(t.value)
+=======
     print(t.value)
+>>>>>>> 5eb90ea54649cf6c90e6c71dc85e76dc750d9971
     t.lexer.skip(1)
 
 
@@ -151,6 +155,7 @@ def p_begin(p):#START
     '''
     p[0] = p[1]
 
+    #run(p[0])
 def p_function(p):
     '''
     function : function funcname OPENCURL code RETURN expression EOL CLOSECURL
@@ -162,11 +167,10 @@ def p_function(p):
     if len(p) > 2:
         p[0] = ("func", p[1], p[2], p[4], p[6])
         #       function , funcname, code, expression
+        run(p[0])   
     else:
         p[0] = p[1]
-
-    run(p[0])
-
+        
 def p_funcname(p):
     '''
     funcname : datatype FNAME OPENPAR parameters CLOSEPAR 
@@ -208,19 +212,35 @@ def p_io(p):
         | OUTPUT OPENPAR iodataout CLOSEPAR
     '''
     p[0] = (p[1],p[3])
+<<<<<<< HEAD
+
+=======
 #def p_io_error(p):
 #    'io : inputoutput error '
 #    print("Error in I/O Statement: Bad Expression")
+>>>>>>> 5eb90ea54649cf6c90e6c71dc85e76dc750d9971
 def p_iodatain(p): # "%d" , var OR "%f" , &var 
     '''
     iodatain : QUOTEMARK percenttype QUOTEMARK COMMA AMP NAME
     '''
     p[0] = (p[2],p[6]) # check if %d/%f == NAME datatype
+<<<<<<< HEAD
+
+=======
+>>>>>>> 5eb90ea54649cf6c90e6c71dc85e76dc750d9971
 def p_iodataout(p): # "%d" , var OR "%f" , &var 
     '''
     iodataout : QUOTEMARK percenttype QUOTEMARK COMMA NAME
     '''
     p[0] = (p[2],p[5]) # check if %d/%f == NAME datatype
+<<<<<<< HEAD
+
+# def p_io_error(p):
+#     'io : INPUT error '
+#     print("Error in I/O Statement: Bad Expression")
+
+=======
+>>>>>>> 5eb90ea54649cf6c90e6c71dc85e76dc750d9971
 def p_percenttype(p):
     '''
     percenttype : PERCENTFLOAT
@@ -395,7 +415,7 @@ VarStack = []
 
 def run(p):
     global VarStack
-    # print("Current p: ", p)
+    print("Current p: ", p)
     if type(p) == tuple:
         if p[0] == '+':
             try: 
@@ -458,7 +478,16 @@ def run(p):
             run(p[1]) # recursive step
             run(p[2]) # runs lines of code
 
+<<<<<<< HEAD
+        elif p[0] == 'parameters':
+            run(p[1])
+            if len(p) > 2:
+                run(p[2])
+
+        elif p[0] == 'func':
+=======
         elif p[0] == "func":
+>>>>>>> 5eb90ea54649cf6c90e6c71dc85e76dc750d9971
             run(p[1]) # recursive step
             VarStack.append({})
 

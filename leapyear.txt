@@ -1,0 +1,29 @@
+$ start this off nice
+
+
+b174n6 l0d1m0n () {			$ MAIN
+
+	b174n6 j3j3x p0h							
+	b174n6 j3j3y p0h
+
+	p450k ("%d", &j3j3x) p0h    
+	p450k ("%d", &j3j3y) p0h    
+
+	h4b4n6 (j3j3x <= j3j3y) {
+
+		kUn6 (j3j3x % 4 == 0) {
+			l4b45 ("%d", j3j3x) p0h
+		} ed1 {
+			
+			kUn6 (j3j3x % 100 == 0 && j3j3x % j3j3x % 400 == 0) {
+				l4b45 ("%d", j3j3x) p0h
+			}
+		}
+
+
+		j3j3x = j3j3x + 1 p0h
+	}
+
+	b471k 0 p0h
+}
+
