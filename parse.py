@@ -133,7 +133,6 @@ def t_NEWLINE(t):
     t.lexer.lineno += t.value.count("\n")
 
 def t_error(t):
-    #print("Line hdsafadsf: Illegal Character '%s' " %t.value[0])
     print("Invalid token at line: ", t.lineno)
     t.lexer.skip(1)
 
@@ -155,36 +154,29 @@ def p_begin(p):#START
     begin : function
     '''
     p[0] = p[1]
-    # run(p[0])
+    run(p[0])
 
 def p_function(p):
     '''
-    function : function funcname OPENCURL code RETURN expression EOL funcend 
+    function : function funcname OPENCURL code RETURN expression EOL CLOSECURL
              | empty
     '''
     # CHECK DATA TYPE OF EXPRESSION 
 
 
     if len(p) > 2:
-        p[0] = (p[2], p[4])
+        p[0] = ("func", p[1], p[2], p[4], p[6])
     else:
         p[0] = p[1]
 
-def p_funcend(p):
-    '''
-    funcend : CLOSECURL
-    '''
-    global VarStack
-    VarStack.pop()
-    p[0] = p[1]
 
 def p_funcname(p):
     '''
     funcname : datatype FNAME OPENPAR parameters CLOSEPAR 
     '''
 
-    global VarStack
-    VarStack.append({})
+    # global VarStack
+    # VarStack.append({})
     
     p[0] = (id(p[1]), p[4])
 
@@ -209,7 +201,8 @@ def p_code(p):
         | code if
         | empty
     '''
-    p[0] = p[1]
+    if len(p) > 2:
+        p[0] = ("code", p[1], p[2])
     print(p[1])
 
 def p_io(p):
@@ -254,10 +247,8 @@ def p_bool(p):
          | NOT bool
          | OPENPAR bool CLOSEPAR
     '''
-    if p[1] == '(':
-        p[0] = p[2]
-    else if len(p) < 4:
-        p[0] = (p[1], p[2])
+    if len(p) < 4:
+        p[0] = (p[2],p[1])
     else:
         p[0] = (p[2],p[1],p[3])
 
@@ -311,22 +302,20 @@ def p_bcode(p): #NESTED REGULAR STATEMENTS
         | bcode BREAK EOL
         | empty
     '''
-    p[0] = p[1]
+    if len(p) > 2:
+        p[0] = ('code', p[1], p[2])
     print(p[1])
 
 
 def p_expression_math(p):
     '''
-    expression :  expression EXP expression
-               |  expression  MULTIPLY expression
-               |  expression DIVIDE expression
-               |  expression PLUS expression
-               |  expression MINUS expression
+    expression :  expression oper expression
                |  OPENPAR expression CLOSEPAR
     '''
     p[0] = (p[2],p[1],p[3])
     print(p[0])
-""" def p_oper(p):
+
+def p_oper(p):
     '''
     oper :  EXP
          |  MULTIPLY
@@ -335,15 +324,17 @@ def p_expression_math(p):
          |  MINUS
          |  EQUALS 
     '''
-    p[0] = p[1] """
+    p[0] = p[1]
+
 def p_vardeclare(p):   #declare a variable  
     '''
     vardeclare : datatype NAME
     '''
-    global VarStack
+    # global VarStack
+    # VarStack[-1][p[2]] = -1                  #default value of -1
     p[0] = ('var', id(p[1]),p[2])   #to add:if p in varlist??
-    VarStack[-1][p[2]] = -1                  #default value of -1
     print(p[0])
+
 def p_varassign(p):
     '''
     varassign : NAME EQUALS expression
@@ -352,10 +343,6 @@ def p_varassign(p):
     # ERROR REMEMBER TO ADD THIS ERROR TO NOT COMPILE LIST
     p[0] = ('=', p[1],p[3])
     print(p[0])
-    # if p[1] in VarStack[-1]:
-    #     pass
-    # else:
-    #     print(p[1] + " not found in scope") 
 
 def p_expression_function(p):
     '''
@@ -382,21 +369,21 @@ def id(s):                          #identifies data type of NAME
         return 'FLOAT'
     else:
         return 'STRING'
+
 def p_expression_int_float(p):
     '''
     expression  : INT
                 | FLOAT
                 | NAME
     '''
-    # CHECK IF DECLARED ALREADY
     p[0] = p[1]
+
 def p_empty(p):       
     '''
     empty : 
     '''
     p[0] = None
-def p_error(p): # Error Handling [IN PROGRESS]
-    #print("Sytax error:", p)
+def p_error(p):
     print("Syntax error at line:", p.lineno)
     #print(p)
     #look for terminating 'p0h'
@@ -409,11 +396,11 @@ parser = yacc.yacc()
 
 VarStack = []
 # Executing Code
-'''
+
 def run(p):
     global VarStack
-    global reserved
-    print(VarStack)
+    print("Current p: ", end='')
+    print(p)
     if type(p) == tuple:
         if p[0] == '+':
             try: 
@@ -471,21 +458,43 @@ def run(p):
         elif p[0] == 'while':
             while (run[p1]):
                 run(p[2])
-        elif p[0] == 'for':
-            for i in range (run([p1]),run(p[2])):
-                run(p[3])
+
+        elif p[0] == 'code':
+            run(p[1]) # recursive step
+            run(p[2]) # runs lines of code
+
+        elif p[0] == "func":
+            run(p[1]) # recursive step
+            VarStack.append({})
+
+            run(p[3]) # runs the code
+            if p[2][1] == 'INT' and type(run(p[4])) != int:
+                print("invalid return value (must be %s)" %p[2][1])
+
+            VarStack.pop()
+
         elif p[0] == 'var':
-            if p[1] not in VarStack[-1]:
-                return p[1] + " : Undeclared Variable"
-            return VarStack[-1][p[1]]
+            if p[2] in VarStack[-1].keys():
+                print(p[2] + " has already been declared") 
+            else:    
+                VarStack[-1][p[2]] = -1
+
         elif p[0] == '=':
             if p[1] not in VarStack[-1].keys():
-                return p[1] + " : Undeclared Variable"
+                print("Undeclared Variable", p[1])
             else:
                 VarStack[-1][p[1]] = run(p[2])
     else:
+        if VarStack:                                # if i have things in my stack
+            if type(p) == str:                      # if its a string then ill check if its in the stack
+                if p in VarStack[-1].keys():
+                    return VarStack[-1][p]
+                else:
+                    print("Undeclared Variable", p)  # hardcoded typechecking
+        elif type(p) == str:
+            print("Undeclared Variable", p)
         return p 
-'''
+
 f = input("Enter j3j3 File Name: ")
 if(f == ""):        #testing for indiv statements
     while True:
@@ -496,6 +505,7 @@ if(f == ""):        #testing for indiv statements
         except EOFError:
             break
         parser.parse(s)
+
 else:               #there's a legit file u wanna read
     inp = open(f + ".txt","r")
     i = 0
