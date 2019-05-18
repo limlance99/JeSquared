@@ -400,8 +400,7 @@ VarStack = []
 
 def run(p):
     global VarStack
-    print("Current p: ", end='')
-    print(p)
+    print("Current p: ", p)
     if type(p) == tuple:
         if p[0] == '+':
             try: 
