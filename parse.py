@@ -155,8 +155,8 @@ def p_begin(p):#START
     begin : function
     '''
     p[0] = p[1]
-
     run(p[0])
+
 def p_function(p):
     '''
     function : function funcname OPENCURL code RETURN expression EOL CLOSECURL
@@ -432,7 +432,7 @@ def run(p):
 
         elif p[0] == '%':
             if type(run(p[1])) != int or type(run(p[2])) != int:
-                print("Unsupported opeand type(s) for " + p[1] +" and " + p[2] + ".")
+                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
             else:
                 return run(p[1]) % run(p[2])
 
@@ -521,6 +521,7 @@ def run(p):
         elif type(p) == str:
             print("Undeclared Variable", p)
         return p 
+
 
 f = input("Enter j3j3 File Name: ")
 if(f == ""):        #testing for indiv statements
