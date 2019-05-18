@@ -1,5 +1,6 @@
 import ply.lex as lex
 import ply.yacc as yacc
+from translate import translate 
 import sys
 
 
@@ -166,7 +167,7 @@ def p_function(p):
 
 
     if len(p) > 2:
-        p[0] = ("func", p[1], p[2], p[4], p[6])
+        p[0] = ("func", p[1], p[2], p[4], p[6],p.lineno)
         #       function , funcname, code, expression
         # run(p[0])   
     else:
@@ -545,6 +546,7 @@ else:               #there's a legit file u wanna read
             print("Done reading File.")
             break
         parser.parse(s)
+        translate(f)
 
         
 
