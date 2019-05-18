@@ -4,6 +4,7 @@ def translate(s):
     out = ''
     s = s.split()
     print(s)
+    toPrint = 0
     for i in range (len(s)):
         if s[i] == "p0h\n" or s[i] =="p0h":
             out+=';'
@@ -15,10 +16,11 @@ def translate(s):
             out+='main'
         elif s[i] == "lut4n6":
             out+='float'
-        elif s[i] == 'p4s0k':  #input
+        elif s[i] == 'p450k':  #input
             out+='scanf'
         elif s[i] == 'l4b45':  #output
             out+='printf'
+            toPrint +=1
         elif s[i] == 'b471k':
             out+='return '
         elif s[i] == 'h4b4n6':
@@ -32,6 +34,10 @@ def translate(s):
         else:
             out+=s[i]
         out+=' '
+    if(toPrint > 0):
+        toPrint = 0
+        string = "printf(\"" + "\\" +"n" +"\");"
+        out+=string
     out+='\n'
     return out
 out = ''

@@ -1,15 +1,16 @@
 #include <stdio.h>
 int  main () { 
 int  j3j3A ; 
-// asdfjhfsadhfdj 
 int  j3j3B ; 
-float j3C ; // this is wrong 
-3 + 4 ; 
-j3j3B = 3 + 5 ; 
-if ( 3 > 5 ){ 
-j3j3A = j3j3B ; 
+j3j3A = 4.5 ; 
+// j3j3D = 3 + 5 ; 
+4.5 + 6.1 ; 
+if ( 6 > 5 ) { 
+j3j3A = 6 ; 
 } 
-return  0 ; // this is wrong 
+scanf ("%d", &j3j3B) ; 
+printf ("%f", j3j3A) ; printf("\n");
+return  0 ; 
 } 
 
 int  summ0n ( int  j3j3X, int  j3j3Y) { 

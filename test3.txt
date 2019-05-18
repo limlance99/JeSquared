@@ -1,5 +1,5 @@
 b174n6 l0d1m0n () {
-	lut4n6 j3j3A p0h
+	b174n6 j3j3A p0h
 	b174n6 j3j3B p0h
 	j3j3A = 4.5 p0h
 	$ j3j3D = 3 + 5 p0h

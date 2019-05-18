@@ -13,6 +13,7 @@ tokens = ['INT',    # Data Types: int and float
         'PLUS',     # PEMDAS  + - * / = ( )
         'MINUS',
         'DIVIDE',
+        'MODULO',
         'MULTIPLY',
         'EXP',
         'EQUALS',
@@ -45,17 +46,20 @@ tokens = ['INT',    # Data Types: int and float
         'NEWLINE',
         'BREAK'
 ] 
+t_EQ = r'=='
+t_NEQ = r'!='
+t_LEQ = r'<='
+t_GEQ = r'>='
+t_LSS = r'\<'
+t_GTR = r'\>'
+t_AND = r'&&'
 t_PLUS = r'\+'
 t_MINUS = r'\-'
 t_MULTIPLY = r'\*'
+t_MODULO = r'\%'
 t_DIVIDE = r'\/'
 t_EXP = r'\^'
-t_EQ = r'=='
-t_NEQ = r'!='
-t_LSS = r'\<'
-t_GTR = r'\>'
-t_LEQ = r'<='
-t_GEQ = r'>='
+
 t_EQUALS = r'\='
 t_OPENPAR = r'\('
 t_CLOSEPAR = r'\)'
@@ -64,7 +68,7 @@ t_CLOSECURL = r'\}'
 t_COMMA = r'\,'
 t_QUOTEMARK = r'\"'
 t_AMP = r'\&'
-t_AND = r'&&'
+
 t_OR = r'\|\|'
 t_NOT = r'\!'
 t_ignore = ' \t'
@@ -129,11 +133,7 @@ def t_NEWLINE(t):
 
 def t_error(t):
     print("Invalid token at line: ", t.lineno)
-<<<<<<< HEAD
     # print(t.value)
-=======
-    print(t.value)
->>>>>>> 5eb90ea54649cf6c90e6c71dc85e76dc750d9971
     t.lexer.skip(1)
 
 
@@ -144,6 +144,7 @@ precedence = (  # PEMDAS => Comparison Operators => Logical Operators
     ('left','EQ','NEQ','LSS','GTR','LEQ','GEQ'),
     ('left', 'PLUS', 'MINUS'),
     ('left','MULTIPLY' ,'DIVIDE'),
+    ('left','MODULO'),
     ('left', 'EXP')
 )
 
@@ -212,35 +213,21 @@ def p_io(p):
         | OUTPUT OPENPAR iodataout CLOSEPAR
     '''
     p[0] = (p[1],p[3])
-<<<<<<< HEAD
-
-=======
-#def p_io_error(p):
-#    'io : inputoutput error '
-#    print("Error in I/O Statement: Bad Expression")
->>>>>>> 5eb90ea54649cf6c90e6c71dc85e76dc750d9971
 def p_iodatain(p): # "%d" , var OR "%f" , &var 
     '''
     iodatain : QUOTEMARK percenttype QUOTEMARK COMMA AMP NAME
     '''
     p[0] = (p[2],p[6]) # check if %d/%f == NAME datatype
-<<<<<<< HEAD
-
-=======
->>>>>>> 5eb90ea54649cf6c90e6c71dc85e76dc750d9971
 def p_iodataout(p): # "%d" , var OR "%f" , &var 
     '''
     iodataout : QUOTEMARK percenttype QUOTEMARK COMMA NAME
     '''
     p[0] = (p[2],p[5]) # check if %d/%f == NAME datatype
-<<<<<<< HEAD
 
 # def p_io_error(p):
 #     'io : INPUT error '
 #     print("Error in I/O Statement: Bad Expression")
 
-=======
->>>>>>> 5eb90ea54649cf6c90e6c71dc85e76dc750d9971
 def p_percenttype(p):
     '''
     percenttype : PERCENTFLOAT
@@ -305,15 +292,16 @@ def p_while(p):
 
 def p_block(p): #control block (while, if-else, regular statements)
     '''
-    block : OPENCURL while CLOSECURL
-        |   OPENCURL if CLOSECURL
-        |   OPENCURL bcode CLOSECURL
+    block : OPENCURL bcode CLOSECURL
     '''
     p[0] = p[2]
 
 def p_bcode(p): #NESTED REGULAR STATEMENTS
     '''
     bcode : bcode io EOL
+        | bcode varassign EOL
+        | while
+        | if
         | bcode expression EOL
         | bcode BREAK EOL
         | empty
@@ -334,6 +322,7 @@ def p_expression_math(p):
 def p_oper(p):
     '''
     oper :  EXP
+        | MODULO
          |  MULTIPLY
          |  DIVIDE
          |  PLUS
@@ -401,7 +390,7 @@ def p_empty(p):
     p[0] = None
 def p_error(p):
     print("Syntax error at line:", p.lineno)
-    #print(p)
+    print(p)
     #look for terminating 'p0h'
     tok = parser.token()
     if not tok or tok.type == 'EOL': 
@@ -439,6 +428,11 @@ def run(p):
                 print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
             except ZeroDivisionError:
                 print("Division by 0.")
+        elif p[0] == '%':
+            try: 
+                return run(p[1]) % run(p[2])
+            except TypeError:
+                print("Unsupported opeand type(s) for " + p[1] +" and " + p[2] + ".")
         elif p[0] == '^':
             try: 
                 return run(p[1])**run(p[2])
@@ -478,16 +472,12 @@ def run(p):
             run(p[1]) # recursive step
             run(p[2]) # runs lines of code
 
-<<<<<<< HEAD
         elif p[0] == 'parameters':
             run(p[1])
             if len(p) > 2:
                 run(p[2])
 
         elif p[0] == 'func':
-=======
-        elif p[0] == "func":
->>>>>>> 5eb90ea54649cf6c90e6c71dc85e76dc750d9971
             run(p[1]) # recursive step
             VarStack.append({})
 
