@@ -75,10 +75,6 @@ def t_FLOAT(t):
     r'\d+\.\d+'
     t.value = float(t.value)
     return t
-def t_STRING(t):
-    r'\".*?\"'
-    t.value = str(t.value)
-    return t
 def t_TYPEINT(t):
     r'b174n6'
     return t
@@ -178,7 +174,7 @@ def p_funcname(p):
 
     # global VarStack
     # VarStack.append({})
-    
+     
     p[0] = (id(p[1]), p[4])
 
 def p_parameters(p):
@@ -188,9 +184,9 @@ def p_parameters(p):
                 | empty
     '''
     if len(p) > 2:
-        p[0] = (p[1], p[3])
+        p[0] = ('parameters', p[1], p[3])
     else:
-        p[0] = p[1]
+        p[0] = ('parameters', p[1])
 
 def p_code(p): 
     '''
@@ -204,7 +200,7 @@ def p_code(p):
     '''
     if len(p) > 2:
         p[0] = ("code", p[1], p[2])
-    print(p[1])
+    #print(p[1])
 
 def p_io(p):
     '''
@@ -214,12 +210,14 @@ def p_io(p):
 def p_io_error(p):
     'io : inputoutput error '
     print("Error in I/O Statement: Bad Expression")
+
 def p_inputoutput(p):
     '''
     inputoutput : INPUT
                 | OUTPUT
     '''
     p[0] = p[1]
+
 def p_iodata(p): # "%d" , var OR "%f" , &var 
     '''
     iodata : QUOTEMARK percenttype QUOTEMARK COMMA AND NAME
@@ -264,7 +262,8 @@ def p_boolop(p):
            | AND
            | OR
     '''
-    p[0] = p[1]  
+    p[0] = p[1]
+
 def p_if(p):
     '''
     if : IF OPENPAR bool CLOSEPAR block else
@@ -305,7 +304,7 @@ def p_bcode(p): #NESTED REGULAR STATEMENTS
     '''
     if len(p) > 2:
         p[0] = ('code', p[1], p[2])
-    print(p[1])
+    #print(p[1])
 
 
 def p_expression_math(p):
@@ -314,7 +313,7 @@ def p_expression_math(p):
                |  OPENPAR expression CLOSEPAR
     '''
     p[0] = (p[2],p[1],p[3])
-    print(p[0])
+    #print(p[0])
 
 def p_oper(p):
     '''
@@ -334,7 +333,7 @@ def p_vardeclare(p):   #declare a variable
     # global VarStack
     # VarStack[-1][p[2]] = -1                  #default value of -1
     p[0] = ('var', id(p[1]),p[2])   #to add:if p in varlist??
-    print(p[0])
+    #print(p[0])
 
 def p_varassign(p):
     '''
@@ -343,13 +342,13 @@ def p_varassign(p):
     '''
     # ERROR REMEMBER TO ADD THIS ERROR TO NOT COMPILE LIST
     p[0] = ('=', p[1],p[3])
-    print(p[0])
+    #print(p[0])
 
 def p_expression_function(p):
     '''
     expression : FNAME OPENPAR varname CLOSEPAR 
     '''
-    p[0] = (p[1], p[3])
+    p[0] = ('funcall', p[1], p[3])
 
 def p_varname(p):
     '''
@@ -396,6 +395,7 @@ def p_error(p):
 parser = yacc.yacc()
 
 VarStack = []
+FunStack = {}
 # Executing Code
 
 def run(p):
@@ -448,27 +448,31 @@ def run(p):
         elif p[0] == '!':
             return not run(p[1]) 
         elif p[0] == 'if':
-            if run(p[1]) is True:
-                run(p[2])
+            run(p[1])
+            run(p[2])
         elif p[0] == 'if_else':
-            if run(p[1]):
-                run(p[2])
-            else:
-                run(p[3])
+            run(p[1])
+            run(p[2])
+            run(p[3])
         elif p[0] == 'while':
-            while (run[p1]):
-                run(p[2])
+            run(p[2])
 
         elif p[0] == 'code':
             run(p[1]) # recursive step
             run(p[2]) # runs lines of code
 
+        elif p[0] == 'parameters':
+            run(p[1])
+            if len(p) > 2:
+                run(p[2])
+
         elif p[0] == "func":
             run(p[1]) # recursive step
             VarStack.append({})
+            run(p[2][1])
 
             run(p[3]) # runs the code
-            if (p[2][1] == 'INT' and type(run(p[4])) != int) or (p[2][1] == 'FLOAT' and type(run(p[4])) != float):
+            if (p[2][0] == 'INT' and type(run(p[4])) != int) or (p[2][0] == 'FLOAT' and type(run(p[4])) != float):
                 print("invalid return value (must be %s)" %p[2][1])
 
             VarStack.pop()
@@ -492,6 +496,8 @@ def run(p):
                 else:
                     print("Undeclared Variable", p)  # hardcoded typechecking
         elif type(p) == str:
+            if "m0n" in p:
+                return p
             print("Undeclared Variable", p)
         return p 
 
