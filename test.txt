@@ -1,5 +1,5 @@
 $ this is a comment, '$' must be followed by a white space(easy parsing)
-b174n6 l0d1 (){    
+b174n6 l0d1m0n (){    
     b174n6 j3j3A p0h    $ declaring vars must start with j3j3
     b174n6 j3j3B p0h    $ note all must end in 'p0h' it acts like a ';'
     b174n6 j3j3C p0h
