@@ -204,24 +204,23 @@ def p_code(p):
 
 def p_io(p):
     '''
-    io : inputoutput OPENPAR iodata CLOSEPAR
+    io : INPUT OPENPAR iodatain CLOSEPAR
+        | OUTPUT OPENPAR iodataout CLOSEPAR
     '''
     p[0] = (p[1],p[3])
 #def p_io_error(p):
 #    'io : inputoutput error '
 #    print("Error in I/O Statement: Bad Expression")
-def p_inputoutput(p):
+def p_iodatain(p): # "%d" , var OR "%f" , &var 
     '''
-    inputoutput : INPUT
-                | OUTPUT
-    '''
-    p[0] = p[1]
-def p_iodata(p): # "%d" , var OR "%f" , &var 
-    '''
-    iodata : QUOTEMARK percenttype QUOTEMARK COMMA AMP NAME
+    iodatain : QUOTEMARK percenttype QUOTEMARK COMMA AMP NAME
     '''
     p[0] = (p[2],p[6]) # check if %d/%f == NAME datatype
-
+def p_iodataout(p): # "%d" , var OR "%f" , &var 
+    '''
+    iodataout : QUOTEMARK percenttype QUOTEMARK COMMA NAME
+    '''
+    p[0] = (p[2],p[5]) # check if %d/%f == NAME datatype
 def p_percenttype(p):
     '''
     percenttype : PERCENTFLOAT
@@ -452,8 +451,8 @@ def run(p):
             else:
                 run(p[3])
         elif p[0] == 'while':
-            while (run[p1]):
-                run(p[2])
+            run(p[1])
+            run(p[2])
 
         elif p[0] == 'code':
             run(p[1]) # recursive step
