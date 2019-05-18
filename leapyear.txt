@@ -1,26 +1,31 @@
 $ start this off nice
 
 
-b174n6 l0d1m0n () {			$ MAIN
+b174n6 l0d1m0n () {		
 
+	$ declaring two variables: j3j3x and j3j3y
 	b174n6 j3j3x p0h							
 	b174n6 j3j3y p0h
 
+	$ getting input and storing it in the two variables
 	p450k ("%d", &j3j3x) p0h    
 	p450k ("%d", &j3j3y) p0h    
 
+	$ while loop that iterates over every number from j3j3x to j3j3y
 	h4b4n6 (j3j3x <= j3j3y) {
 
+		$ if divisible by 4, or
 		kUn6 (j3j3x % 4 == 0) {
 			l4b45 ("%d", j3j3x) p0h
 		} ed1 {
 			
-			kUn6 (j3j3x % 100 == 0 && j3j3x % j3j3x % 400 == 0) {
+			$ if divisible by 100 and 400, print the number
+			kUn6 (j3j3x % 100 == 0 && j3j3x % 400 == 0) {
 				l4b45 ("%d", j3j3x) p0h
 			}
 		}
 
-
+		$ iterate by 1
 		j3j3x = j3j3x + 1 p0h
 	}
 

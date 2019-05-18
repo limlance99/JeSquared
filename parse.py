@@ -156,7 +156,7 @@ def p_begin(p):#START
     '''
     p[0] = p[1]
 
-    #run(p[0])
+    run(p[0])
 def p_function(p):
     '''
     function : function funcname OPENCURL code RETURN expression EOL CLOSECURL
@@ -168,7 +168,7 @@ def p_function(p):
     if len(p) > 2:
         p[0] = ("func", p[1], p[2], p[4], p[6])
         #       function , funcname, code, expression
-        run(p[0])   
+        # run(p[0])   
     else:
         p[0] = p[1]
         
@@ -180,7 +180,7 @@ def p_funcname(p):
     # global VarStack
     # VarStack.append({})
     
-    p[0] = (id(p[1]), p[4])
+    p[0] = (id(p[1]), p[4], p[2])
 
 def p_parameters(p):
     '''
@@ -189,9 +189,9 @@ def p_parameters(p):
                 | empty
     '''
     if len(p) > 2:
-        p[0] = (p[1], p[3])
+        p[0] = ('parameters', p[1], p[3])
     else:
-        p[0] = p[1]
+        p[0] = ('parameters', p[1])
 
 def p_code(p): 
     '''
@@ -205,7 +205,7 @@ def p_code(p):
     '''
     if len(p) > 2:
         p[0] = ("code", p[1], p[2])
-    print(p[1])
+    #print(p[1])
 
 def p_io(p):
     '''
@@ -308,7 +308,8 @@ def p_bcode(p): #NESTED REGULAR STATEMENTS
     '''
     if len(p) > 2:
         p[0] = ('code', p[1], p[2])
-    print(p[1])
+    else:
+        p[0] = (p[1])
 
 
 def p_expression_math(p):
@@ -317,7 +318,7 @@ def p_expression_math(p):
                |  OPENPAR expression CLOSEPAR
     '''
     p[0] = (p[2],p[1],p[3])
-    print(p[0])
+    #print(p[0])
 
 def p_oper(p):
     '''
@@ -338,7 +339,7 @@ def p_vardeclare(p):   #declare a variable
     # global VarStack
     # VarStack[-1][p[2]] = -1                  #default value of -1
     p[0] = ('var', id(p[1]),p[2])   #to add:if p in varlist??
-    print(p[0])
+    #print(p[0])
 
 def p_varassign(p):
     '''
@@ -347,13 +348,13 @@ def p_varassign(p):
     '''
     # ERROR REMEMBER TO ADD THIS ERROR TO NOT COMPILE LIST
     p[0] = ('=', p[1],p[3])
-    print(p[0])
+    #print(p[0])
 
 def p_expression_function(p):
     '''
     expression : FNAME OPENPAR varname CLOSEPAR 
     '''
-    p[0] = (p[1], p[3])
+    p[0] = ('funcall', p[1], p[3])
 
 def p_varname(p):
     '''
@@ -400,44 +401,41 @@ def p_error(p):
 parser = yacc.yacc()
 
 VarStack = []
+FuncTypes = {}
 # Executing Code
 
 def run(p):
     global VarStack
-    print("Current p: ", p)
+    global FuncTypes
+    #print("Current p: ", p)
     if type(p) == tuple:
-        if p[0] == '+':
-            try: 
+        if p[0] in '+-*^':
+            if type(run(p[1])) != type(run(p[2])): 
+                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
+            else:
                 return run(p[1]) + run(p[2])
-            except TypeError:
-                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
-        elif p[0] == '-':
-            try:
-                return run(p[1]) - run(p[2])
-            except TypeError:
-                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
-        elif p[0] == '*':
-            try: 
-                return run(p[1]) * run(p[2])
-            except TypeError:
-                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
+
         elif p[0] == '/':
-            try: 
-                return run(p[1]) / run(p[2])
-            except TypeError:
+            if type(run(p[1])) == int and type(run(p[2])) == float:
                 print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
-            except ZeroDivisionError:
-                print("Division by 0.")
+            elif type(run(p[1])) == int and type(run(p[2])) == int: 
+                try: 
+                    return run(p[1]) // run(p[2])
+                except ZeroDivisionError:
+                    print("Division by 0.")
+            else: 
+                try: 
+                    return run(p[1]) / run(p[2])
+                except ZeroDivisionError:
+                    print("Division by 0.")
+            
+
         elif p[0] == '%':
-            try: 
-                return run(p[1]) % run(p[2])
-            except TypeError:
+            if type(run(p[1])) != int or type(run(p[2])) != int:
                 print("Unsupported opeand type(s) for " + p[1] +" and " + p[2] + ".")
-        elif p[0] == '^':
-            try: 
-                return run(p[1])**run(p[2])
-            except TypeError:
-                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + ".")
+            else:
+                return run(p[1]) % run(p[2])
+
         elif p[0] == '==':
             return run(p[1]) == run(p[2])
         elif p[0] == '!=':
@@ -457,13 +455,12 @@ def run(p):
         elif p[0] == '!':
             return not run(p[1]) 
         elif p[0] == 'if':
-            if run(p[1]) is True:
-                run(p[2])
+            run(p[1])
+            run(p[2])
         elif p[0] == 'if_else':
-            if run(p[1]):
-                run(p[2])
-            else:
-                run(p[3])
+            run(p[1])
+            run(p[2])
+            run(p[3])
         elif p[0] == 'while':
             run(p[1])
             run(p[2])
@@ -477,27 +474,43 @@ def run(p):
             if len(p) > 2:
                 run(p[2])
 
+        elif p[0] == 'funcall':
+            if p[1] not in FuncTypes.keys():
+                print("function", p[1], "has not yet been declared.")
+            else:
+                run(p[2])
+                if FuncTypes[p[1]] == "INT":
+                    return 0
+                elif FuncTypes[p[1]] == "FLOAT":
+                    return 0.0
+
         elif p[0] == 'func':
             run(p[1]) # recursive step
             VarStack.append({})
-
+            run(p[2][1])
+            FuncTypes[p[2][2]] = p[2][0]  # stores the type of function
             run(p[3]) # runs the code
-            if (p[2][1] == 'INT' and type(run(p[4])) != int) or (p[2][1] == 'FLOAT' and type(run(p[4])) != float):
-                print("invalid return value (must be %s)" %p[2][1])
-
+            if (p[2][0] == 'INT' and type(run(p[4])) != int) or (p[2][0] == 'FLOAT' and type(run(p[4])) != float):
+                print("invalid return value (must be %s)" %p[2][0])
             VarStack.pop()
 
         elif p[0] == 'var':
             if p[2] in VarStack[-1].keys():
                 print(p[2] + " has already been declared") 
             else:    
-                VarStack[-1][p[2]] = -1
+                if p[1] == 'INT':
+                    VarStack[-1][p[2]] = 0
+                elif p[1] == 'FLOAT':
+                    VarStack[-1][p[2]] = 0.0
 
         elif p[0] == '=':
             if p[1] not in VarStack[-1].keys():
                 print("Undeclared Variable", p[1])
             else:
-                VarStack[-1][p[1]] = run(p[2])
+                if type(VarStack[-1][p[1]]) != type(run(p[2])):
+                    print("Cannot assign (different data type)")
+                else:
+                    VarStack[-1][p[1]] = run(p[2])
     else:
         if VarStack:                                # if i have things in my stack
             if type(p) == str:                      # if its a string then ill check if its in the stack
