@@ -154,7 +154,6 @@ def p_begin(p):#START
     begin : function
     '''
     p[0] = p[1]
-    run(p[0])
 
 def p_function(p):
     '''
@@ -166,9 +165,11 @@ def p_function(p):
 
     if len(p) > 2:
         p[0] = ("func", p[1], p[2], p[4], p[6])
+        #       function , funcname, code, expression
     else:
         p[0] = p[1]
 
+    run(p[0])
 
 def p_funcname(p):
     '''

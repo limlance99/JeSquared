@@ -1,8 +1,8 @@
 $ this is a comment, '$' must be followed by a white space(easy parsing)
 
-$ summ0n ( b174n6 j3j3X ) {
-$	b471k j3j3X p0h
-$ }
+b174n6 summ0n ( b174n6 j3j3X ) {	
+	b471k j3j3X p0h
+}
 
 b174n6 l0d1m0n () {
 	b174n6 j3j3A p0h
