@@ -400,7 +400,7 @@ VarStack = []
 
 def run(p):
     global VarStack
-    print("Current p: ", p)
+    # print("Current p: ", p)
     if type(p) == tuple:
         if p[0] == '+':
             try: 
@@ -468,7 +468,7 @@ def run(p):
             VarStack.append({})
 
             run(p[3]) # runs the code
-            if p[2][1] == 'INT' and type(run(p[4])) != int:
+            if (p[2][1] == 'INT' and type(run(p[4])) != int) or (p[2][1] == 'FLOAT' and type(run(p[4])) != float):
                 print("invalid return value (must be %s)" %p[2][1])
 
             VarStack.pop()
