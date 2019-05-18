@@ -27,6 +27,7 @@ tokens = ['INT',    # Data Types: int and float
         'INPUT',    # Input Function Only Accepts One Character at a Time
         'OUTPUT',
         'COMMA',
+        'AMP',
         'QUOTEMARK',
         'AND',       # Logical Operators
         'OR',    
@@ -62,38 +63,32 @@ t_OPENCURL = r'\{'
 t_CLOSECURL = r'\}'
 t_COMMA = r'\,'
 t_QUOTEMARK = r'\"'
+t_AMP = r'\&'
 t_AND = r'&&'
 t_OR = r'\|\|'
 t_NOT = r'\!'
 t_ignore = ' \t'
-
-def t_INT(t):
-    r'\d+'
-    t.value = int(t.value)
-    return t
 def t_FLOAT(t):
     r'\d+\.\d+'
     t.value = float(t.value)
     return t
-def t_STRING(t):
-    r'\".*?\"'
-    t.value = str(t.value)
-    return t
-def t_TYPEINT(t):
-    r'b174n6'
+def t_INT(t):
+    r'\d+'
+    t.value = int(t.value)
     return t
 def t_TYPEFLOAT(t):
     r'lut4n6'
     return t
-# def t_TYPESTRING(t):
-#     r't471'
-#     return t
-def t_PERCENTINT(t):
-    r'%d'
+def t_TYPEINT(t):
+    r'b174n6'
     return t
 def t_PERCENTFLOAT(t):
     r'%f'
     return t
+def t_PERCENTINT(t):
+    r'%d'
+    return t
+
 def t_NAME(t):
     r'j3j3[a-zA-Z_][a-zA-Z_0-9]*' 
     return t
@@ -134,6 +129,7 @@ def t_NEWLINE(t):
 
 def t_error(t):
     print("Invalid token at line: ", t.lineno)
+    print(t.value)
     t.lexer.skip(1)
 
 
@@ -211,9 +207,9 @@ def p_io(p):
     io : inputoutput OPENPAR iodata CLOSEPAR
     '''
     p[0] = (p[1],p[3])
-def p_io_error(p):
-    'io : inputoutput error '
-    print("Error in I/O Statement: Bad Expression")
+#def p_io_error(p):
+#    'io : inputoutput error '
+#    print("Error in I/O Statement: Bad Expression")
 def p_inputoutput(p):
     '''
     inputoutput : INPUT
@@ -222,7 +218,7 @@ def p_inputoutput(p):
     p[0] = p[1]
 def p_iodata(p): # "%d" , var OR "%f" , &var 
     '''
-    iodata : QUOTEMARK percenttype QUOTEMARK COMMA AND NAME
+    iodata : QUOTEMARK percenttype QUOTEMARK COMMA AMP NAME
     '''
     p[0] = (p[2],p[6]) # check if %d/%f == NAME datatype
 
