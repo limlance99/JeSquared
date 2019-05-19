@@ -11,29 +11,38 @@ def translate(str):
         toPrint = 0
         for i in range (len(s[j])):
             
-            if s[j][i] == "p0h\n" or s[j][i] =="p0h":
-                out+=';'
-            elif s[j][i] == '$':   #comment
-                out+='//'
-            elif s[j][i] == "b174n6":
-                out+='int '
-            elif s[j][i] == "l0d1m0n":
-                out+='main'
-            elif s[j][i] == "lut4n6":
-                out+='float'
-            elif s[j][i] == 'p450k':  #input
-                out+='scanf'
-            elif s[j][i] == 'l4b45':  #output
-                out+='printf'
+            if "p0h" in s[j][i]:
+                out+= s[j][i].replace(';','p0h')
+            elif '$' in s[j][i]:   #comment
+                out+= s[j][i].replace('$','//')
+            elif "b174n6" in s[j][i]:
+                out+=s[j][i].replace('b174n6','int')
+                
+            elif "l0d1m0n" in s[j][i]:
+                out+=s[j][i].replace('l0d1m0n','main')
+                
+            elif "lut4n6" in s[j][i]:
+                out+=s[j][i].replace('lut4n6','float')
+                
+            elif 'p450k' in s[j][i]:  #input
+                out+=s[j][i].replace('p450k','scanf')
+                
+            elif 'l4b45' in s[j][i]:  #output
+                out+=s[j][i].replace('l4b45','printf')
+                
                 toPrint +=1
-            elif s[j][i] == 'b471k':
-                out+='return '
-            elif s[j][i] == 'h4b4n6':
-                out+='while'
-            elif s[j][i] == 'kUn6':
-                out+='if'
-            elif s[j][i] == 'ed1':
-                out+= 'else'
+            elif 'b471k' in s[j][i]:
+                out+=s[j][i].replace('b471k','return')
+                
+            elif 'h4b4n6' in s[j][i]:
+                out+=s[j][i].replace('h4b4n6','while')
+                
+            elif 'kUn6' in s[j][i]:
+                out+=s[j][i].replace('kUn6','if')
+            
+            elif 'ed1' in s[j][i]:
+                out+=s[j][i].replace('ed1','elses')
+                
             elif s[j][i] == '':
                 out+= ' '
             else:
@@ -47,5 +56,4 @@ def translate(str):
     """ translate(s[j])
     out+=translate(inp[i]) """
     output.write(out)
-    print("%s.c successfully created!" %str)
 
