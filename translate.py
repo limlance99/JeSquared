@@ -47,4 +47,5 @@ def translate(str):
     """ translate(s[j])
     out+=translate(inp[i]) """
     output.write(out)
+    print("%s.c successfully created!" %str)
 

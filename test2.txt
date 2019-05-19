@@ -7,10 +7,10 @@ b174n6 summ0n ( b174n6 j3j3X ) {
 
 b174n6 l0d1m0n () {
 	b174n6 j3j3B p0h
-	j3j3B = 5.5 j3j3A 
+	j3j3B = j3j3A p0h
 
 	kUn6 (j3j3B > 1) {
-		j3j3B = j3j3B / 0 p0h
+		j3j3B = j3j3B / 4 p0h
 	} ed1 {
 		j3j3C = j3j3B + j3j3B p0h	
 	}

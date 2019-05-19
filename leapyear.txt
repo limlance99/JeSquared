@@ -10,12 +10,14 @@ b174n6 l0d1m0n () {
 	$ getting input and storing it in the two variables
 	p450k ("%d", &j3j3x) p0h    
 	p450k ("%d", &j3j3y) p0h    
-	j3j3HELLO = 5 p0h
+	
 	$ while loop that iterates over every number from j3j3x to j3j3y
 	h4b4n6 (j3j3x <= j3j3y) {
 		$ if divisible by 4, or
 		kUn6 (j3j3x % 4 == 0) {
-			l4b45 ("%d", j3j3x) p0h
+			kUn6 (j3j3x % 100 != 0) {
+				l4b45 ("%d", j3j3x) p0h
+			}
 		} ed1 {
 			
 			$ if divisible by 100 and 400, print the number

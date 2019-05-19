@@ -1,29 +1,30 @@
-b174n6 fibm0n(b174n6 j3j3x) {
+b174n6 fibm0n( b174n6 j3j3x) {
+	lut4n6 j3j3c p0h
 	kUn6 (j3j3x == 0) {
 		b471k 0 p0h
 	}
 	kUn6 (j3j3x == 1) {
 		b471k 1 p0h
 	}
-
+	
 	b174n6 j3j3a p0h
 	b174n6 j3j3b p0h
 	j3j3a = j3j3x - 1 p0h
 	j3j3b = j3j3x - 2 p0h
-	b471k fibm0n(j3h3a) - fibm0n(j3j3b) p0h
+	b471k fibm0n(j3j3a) + fibm0n(j3j3b) p0h
 }
 
-b174n6 l0d1m0n() {
+b174n6 l0d1m0n () {
 	b174n6 j3j3a p0h
 	b174n6 j3j3b p0h
 	b174n6 j3j3temp p0h
 
-	p450k("%d", &j3j3a) p0h
+	p450k ("%d", &j3j3a) p0h
 	j3j3b = 1 p0h
 
 	h4b4n6 (j3j3b <= j3j3a) {
 		j3j3temp = fibm0n(j3j3b) p0h
-		l4b45("%d", j3j3temp) p0h
+		l4b45 ("%d", j3j3temp) p0h
 		j3j3b = j3j3b + 1 p0h
 	}
 

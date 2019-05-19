@@ -94,11 +94,11 @@ def t_PERCENTINT(t):
     r'%d'
     return t
 
-def t_NAME(t):
-    r'j3j3[a-zA-Z_][a-zA-Z_0-9]*' 
-    return t
 def t_FNAME(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*m0n'
+    return t
+def t_NAME(t):
+    r'j3j3[a-zA-Z_][a-zA-Z_0-9]*' 
     return t
 def t_EOL(t):
     r'p0h'
@@ -133,9 +133,11 @@ def t_NEWLINE(t):
     t.lexer.lineno += t.value.count("\n")
 
 def t_error(t):
+    global errors
     print("Invalid token at line: ", t.lineno)
     # print(t.value)
     t.lexer.skip(1)
+    errors += 1
 
 
 lexer = lex.lex()
@@ -160,14 +162,14 @@ def p_begin(p):#START
     run(p[0])
 def p_function(p):
     '''
-    function : function funcname OPENCURL code RETURN expression EOL CLOSECURL
+    function : function funcname OPENCURL code return EOL CLOSECURL
              | empty
     '''
     # CHECK DATA TYPE OF EXPRESSION 
 
 
     if len(p) > 2:
-        p[0] = ("func", p[1], p[2], p[4], p[6],p.lexer.lineno)
+        p[0] = ("func", p[1], p[2], p[4], p[5], p.lexer.lineno)
         #       function , funcname, code, expression
         # run(p[0])   
     else:
@@ -202,29 +204,28 @@ def p_code(p):
         | code expression EOL
         | code while 
         | code if
+        | code return EOL
         | empty
     '''
     if len(p) > 2:
         p[0] = ("code", p[1], p[2])
     #print(p[1])
 
+def p_return(p):
+    '''
+    return : RETURN expression
+    '''
+    p[0] = ('return', p[2], p.lexer.lineno)
+
 def p_io(p):
     '''
-    io : INPUT OPENPAR iodatain CLOSEPAR
-        | OUTPUT OPENPAR iodataout CLOSEPAR
+    io : INPUT OPENPAR QUOTEMARK percenttype QUOTEMARK COMMA AMP NAME CLOSEPAR
+        | OUTPUT OPENPAR QUOTEMARK percenttype QUOTEMARK COMMA NAME CLOSEPAR
     '''
-    p[0] = (p[1],p[3])
-def p_iodatain(p): # "%d" , var OR "%f" , &var 
-    '''
-    iodatain : QUOTEMARK percenttype QUOTEMARK COMMA AMP NAME
-    '''
-    p[0] = (p[2],p[6]) # check if %d/%f == NAME datatype
-def p_iodataout(p): # "%d" , var OR "%f" , &var 
-    '''
-    iodataout : QUOTEMARK percenttype QUOTEMARK COMMA NAME
-    '''
-    p[0] = (p[2],p[5]) # check if %d/%f == NAME datatype
-
+    if len(p) > 9:
+        p[0] = ('io', p[4], p[8], p.lexer.lineno)
+    else:
+        p[0] = ('io', p[4], p[7], p.lexer.lineno)
 # def p_io_error(p):
 #     'io : INPUT error '
 #     print("Error in I/O Statement: Bad Expression")
@@ -301,10 +302,11 @@ def p_bcode(p): #NESTED REGULAR STATEMENTS
     '''
     bcode : bcode io EOL
         | bcode varassign EOL
-        | while
-        | if
+        | bcode while
+        | bcode if
         | bcode expression EOL
         | bcode BREAK EOL
+        | bcode return EOL
         | empty
     '''
     if len(p) > 2:
@@ -318,7 +320,7 @@ def p_expression_math(p):
     expression :  expression oper expression
                |  OPENPAR expression CLOSEPAR
     '''
-    p[0] = (p[2],p[1],p[3],p.lexer.lineno)
+    p[0] = (p[2],p[1],p[3], p.lexer.lineno)
     #print(p[0])
 
 def p_oper(p):
@@ -350,11 +352,6 @@ def p_varassign(p):
     p[0] = ('=', p[1],p[3],p.lexer.lineno)
     #print(p[0])
 
-def p_expression_function(p):
-    '''
-    expression : FNAME OPENPAR varname CLOSEPAR 
-    '''
-    p[0] = ('funcall', p[1], p[3],p.lexer.lineno)
 
 def p_varname(p):
     '''
@@ -363,7 +360,7 @@ def p_varname(p):
             | empty
     '''
     if len(p) > 2:
-        p[0] = (p[1], p[3])
+        p[0] = (p[1], p[3], p.lexer.lineno)
     else:
         p[0] = p[1]
         
@@ -384,14 +381,22 @@ def p_expression_int_float(p):
     '''
     p[0] = p[1]
 
+def p_expression_function(p):
+    '''
+    expression : FNAME OPENPAR varname CLOSEPAR 
+    '''
+    p[0] = ('funcall', p[1], p[3], p.lexer.lineno)
+
 def p_empty(p):       
     '''
     empty : 
     '''
     p[0] = None
 def p_error(p):
+    global errors
     print("Syntax error at line:", p.lineno)
-    print(p)
+    errors += 1
+    # print(p)
     #look for terminating 'p0h'
     tok = parser.token()
     if not tok or tok.type == 'EOL': 
@@ -402,37 +407,52 @@ parser = yacc.yacc()
 
 VarStack = []
 FuncTypes = {}
+errors = 0
 # Executing Code
 
 def run(p):
     global VarStack
     global FuncTypes
+    global errors
+    #print(FuncTypes)
     #print("Current p: ", p)
     if type(p) == tuple:
         if p[0] in '+-*^':
-            if type(run(p[1])) != type(run(p[2])): 
-                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] + "at line" + str(p[-1])+ ".")
+            if type(run(p[1])) == str or type(run(p[2])) == str:
+                    print("Line %d: Cannot operate (undeclared variable)." %p[-1])
+            elif type(run(p[1])) != type(run(p[2])): 
+                print("Line %d: Unsupported operand type(s) for " %p[-1] + p[1] +" and " + p[2])
+                errors += 1
             else:
                 return run(p[1]) + run(p[2])
 
         elif p[0] == '/':
-            if type(run(p[1])) == int and type(run(p[2])) == float:
-                print("Unsupported operand type(s) for " + p[1] +" and " + p[2] +"at line" + str(p[-1])+ ".")
+
+            if type(run(p[1])) == str or type(run(p[2])) == str:
+                    print("Line %d: Cannot operate (undeclared variable)." %p[-1])
+            elif type(run(p[1])) == int and type(run(p[2])) == float:
+                print("Line %d: Unsupported operand type(s) for " %p[-1] + p[1] +" and " + p[2])
+                errors += 1
             elif type(run(p[1])) == int and type(run(p[2])) == int: 
                 try: 
                     return run(p[1]) // run(p[2])
                 except ZeroDivisionError:
-                    print("Division by 0.")
+                    print("Line %d: Division by 0." %p[-1])
+                    errors += 1
             else: 
                 try: 
                     return run(p[1]) / run(p[2])
                 except ZeroDivisionError:
-                    print("Division by 0.")
+                    print("Line %d: Division by 0." %p[-1])
+                    errors += 1
             
 
         elif p[0] == '%':
-            if type(run(p[1])) != int or type(run(p[2])) != int:
-                print("Unsupported opeand type(s) for " + p[1] +" and " + p[2] + "at line" + str(p[-1])+"." )
+            if type(run(p[1])) == str or type(run(p[2])) == str:
+                    print("Line %d: Cannot operate (undeclared variable)." %p[-1])
+            elif type(run(p[1])) != int or type(run(p[2])) != int:
+                print("Line %d: Unsupported operand type(s) for " %p[-1] + p[1] +" and " + p[2])
+                errors += 1
             else:
                 return run(p[1]) % run(p[2])
 
@@ -454,6 +474,7 @@ def run(p):
             return run(p[1]) or run(p[2])
         elif p[0] == '!':
             return not run(p[1]) 
+
         elif p[0] == 'if':
             run(p[1])
             run(p[2])
@@ -469,14 +490,23 @@ def run(p):
             run(p[1]) # recursive step
             run(p[2]) # runs lines of code
 
+        elif p[0] == 'io':
+            if p[1] == '%d' and type(run(p[2])) != int:
+                print("Line %d: Invalid format (MUST BE INT)" %p[-1])
+                errors += 1
+            elif p[1] == '%f' and type(run(p[2])) != float:
+                print("Line %d: Invalid format (MUST BE FLOAT)" %p[-1])
+                errors += 1
+
         elif p[0] == 'parameters':
             run(p[1])
             if len(p) > 2:
                 run(p[2])
 
         elif p[0] == 'funcall':
-            if p[1] not in FuncTypes.keys():
-                print("function", p[1], "has not yet been declared. See line: ", p[-1])
+            if p[1] not in FuncTypes:
+                print("Line %d: function %s has not yet been declared." %(p[-1], p[1]))
+                errors += 1
             else:
                 run(p[2])
                 if FuncTypes[p[1]] == "INT":
@@ -484,19 +514,28 @@ def run(p):
                 elif FuncTypes[p[1]] == "FLOAT":
                     return 0.0
 
+
+        elif p[0] == 'return':
+            temp = [i for i in FuncTypes.keys()]
+            wow = FuncTypes[temp[-1]]
+            if (wow == 'INT' and type(run(p[1])) != int) or (wow == 'FLOAT' and type(run(p[1])) != float):
+                print("Line %d: Invalid return value (must be %s)" %(p[-1], wow))
+                errors += 1
+
         elif p[0] == 'func':
             run(p[1]) # recursive step
             VarStack.append({})
             run(p[2][1])
             FuncTypes[p[2][2]] = p[2][0]  # stores the type of function
             run(p[3]) # runs the code
-            if (p[2][0] == 'INT' and type(run(p[4])) != int) or (p[2][0] == 'FLOAT' and type(run(p[4])) != float):
-                print("invalid return value (must be %s)" %p[2][0])
+            run(p[4])
+            
             VarStack.pop()
 
         elif p[0] == 'var':
             if p[2] in VarStack[-1].keys():
-                print(p[2] + " has already been declared") 
+                print("Line %d: %s has already been declared." %(p[-1], p[2]))
+                errors += 1 
             else:    
                 if p[1] == 'INT':
                     VarStack[-1][p[2]] = 0
@@ -505,21 +544,22 @@ def run(p):
 
         elif p[0] == '=':
             if p[1] not in VarStack[-1].keys():
-                print("Undeclared Variable",p[1], "at line", p[-1])
+                print("Line %d: Undeclared variable %s." %(p[-1] , p[1]))
+                errors += 1
             else:
-                if type(VarStack[-1][p[1]]) != type(run(p[2])):
-                    print("Cannot assign (different data type)")
+                if type(run(p[2])) == str:
+                    print("Line %d: Cannot assign (undeclared variable)." %p[-1])
+                elif type(VarStack[-1][p[1]]) != type(run(p[2])):
+                    print("Line %d: Cannot assign (different data type)." %p[-1])
+                    errors += 1
                 else:
                     VarStack[-1][p[1]] = run(p[2])
     else:
-        if VarStack:                                # if i have things in my stack
-            if type(p) == str:                      # if its a string then ill check if its in the stack
+        if VarStack and type(p) == str:     # if i have things in my stack                            
+
+                                            # if its a string then ill check if its in the stack
                 if p in VarStack[-1].keys():
                     return VarStack[-1][p]
-                else:
-                    print("Undeclared Variable", p)  # hardcoded typechecking
-        elif type(p) == str:
-            print("Undeclared Variable", p)
         return p 
 
 f = input("Enter j3j3 File Name: ")
@@ -545,8 +585,13 @@ else:               #there's a legit file u wanna read
             print("Done reading File.")
             break
         parser.parse(s)
-        translate(f)
 
+        print()
+        if errors == 0:
+            print("No errors found.")
+            translate(f)
+        else:
+            print("%d errors found.\nCould not create C file." %errors)
         
 
 
