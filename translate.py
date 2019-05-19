@@ -12,7 +12,7 @@ def translate(str):
         for i in range (len(s[j])):
             
             if "p0h" in s[j][i]:
-                out+= s[j][i].replace(';','p0h')
+                out+= s[j][i].replace('p0h',';')
             elif '$' in s[j][i]:   #comment
                 out+= s[j][i].replace('$','//')
             elif "b174n6" in s[j][i]:
@@ -41,7 +41,7 @@ def translate(str):
                 out+=s[j][i].replace('kUn6','if')
             
             elif 'ed1' in s[j][i]:
-                out+=s[j][i].replace('ed1','elses')
+                out+=s[j][i].replace('ed1','else')
                 
             elif s[j][i] == '':
                 out+= ' '
@@ -56,4 +56,5 @@ def translate(str):
     """ translate(s[j])
     out+=translate(inp[i]) """
     output.write(out)
+    print("%s.c successfully created!" %str)
 

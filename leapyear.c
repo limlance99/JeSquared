@@ -2,11 +2,11 @@
 // start this off nice 
 
 
-int  main () { 
+int main () { 
 
 // declaring two variables: j3j3x and j3j3y 
-int  j3j3x ; 
-int  j3j3y ; 
+int j3j3x ; 
+int j3j3y ; 
 
 // getting input and storing it in the two variables 
 scanf ("%d", &j3j3x) ; 
@@ -31,6 +31,6 @@ printf ("%d", j3j3x) ; printf("\n");
 j3j3x = j3j3x + 1 ; 
 } 
 
-return  0 ; 
+return 0 ; 
 } 
 
