@@ -133,8 +133,7 @@ def t_NEWLINE(t):
 
 def t_error(t):
     global errors
-    print("Invalid token at line: ", t.lineno)
-    # print(t.value)
+    print("Line %d: Invalid token." %t.lineno)
     t.lexer.skip(1)
     errors += 1
 
@@ -159,6 +158,7 @@ def p_begin(p):#START
     p[0] = p[1]
 
     run(p[0])
+
 def p_function(p):
     '''
     function : function funcname OPENCURL code return EOL CLOSECURL
@@ -166,14 +166,13 @@ def p_function(p):
     '''
     # CHECK DATA TYPE OF EXPRESSION 
 
-
     if len(p) > 2:
         p[0] = ("func", p[1], p[2], p[4], p[5], p.lexer.lineno)
         #       function , funcname, code, expression
-        # run(p[0])   
+        
     else:
         p[0] = p[1]
-        
+
 def p_funcname(p):
     '''
     funcname : datatype FNAME OPENPAR parameters CLOSEPAR 
@@ -182,7 +181,7 @@ def p_funcname(p):
     # global VarStack
     # VarStack.append({})
     
-    p[0] = (id(p[1]), p[4], p[2])
+    p[0] = ('funcname', id(p[1]), p[4], p[2])
 
 def p_parameters(p):
     '''
@@ -191,9 +190,9 @@ def p_parameters(p):
                 | empty
     '''
     if len(p) > 2:
-        p[0] = ('parameters', p[1], p[3])
+        p[0] = ('parameters', p[1], p[3], p.lexer.lineno)
     else:
-        p[0] = ('parameters', p[1])
+        p[0] = ('parameters', p[1], p.lexer.lineno)
 
 def p_code(p): 
     '''
@@ -359,9 +358,9 @@ def p_varname(p):
             | empty
     '''
     if len(p) > 2:
-        p[0] = (p[1], p[3], p.lexer.lineno)
+        p[0] = ('varname', p[1], p[3], p.lexer.lineno)
     else:
-        p[0] = p[1]
+        p[0] = ('varname', p[1], p.lexer.lineno) 
         
 
 def id(s):                          #identifies data type of NAME
@@ -393,26 +392,27 @@ def p_empty(p):
     p[0] = None
 def p_error(p):
     global errors
-    print("Syntax error at line:", p.lineno)
+    print("Line %d: Syntax error." %p.lexer.lineno)
     errors += 1
-    # print(p)
-    #look for terminating 'p0h'
-    tok = parser.token()
-    if not tok or tok.type == 'EOL': 
-        print("p0h not found at end of expression.")
-    return tok
 
 parser = yacc.yacc()
 
 VarStack = []
 FuncTypes = {}
+FuncPmtrs = {}
 errors = 0
+index = 0
+checkName = ''
+
 # Executing Code
 
 def run(p):
     global VarStack
     global FuncTypes
+    global FuncPmtrs
     global errors
+    global index
+    global checkName
     #print(FuncTypes)
     #print("Current p: ", p)
     if type(p) == tuple:
@@ -511,21 +511,60 @@ def run(p):
                 print("Line %d: Invalid format (MUST BE FLOAT)" %p[-1])
                 errors += 1
 
-        elif p[0] == 'parameters':
-            run(p[1])
-            if len(p) > 2:
-                run(p[2])
-
         elif p[0] == 'funcall':
             if p[1] not in FuncTypes:
                 print("Line %d: function %s has not yet been declared." %(p[-1], p[1]))
                 errors += 1
             else:
+                index = 0
+                checkName = p[1]
                 run(p[2])
                 if FuncTypes[p[1]] == "INT":
                     return 0
                 elif FuncTypes[p[1]] == "FLOAT":
                     return 0.0
+
+        elif p[0] == 'funcname':
+            FuncTypes[p[3]] = p[1]
+            FuncPmtrs[p[3]] = []
+            run(p[2])
+
+        elif p[0] == 'parameters':
+            run(p[1])
+            temp = [i for i in FuncPmtrs.keys()]
+            if p[1] != None:
+                if p[1][1] == 'INT':
+                    FuncPmtrs[temp[-1]].append(int)                   # data type
+                elif p[1][1] == 'FLOAT':
+                    FuncPmtrs[temp[-1]].append(float)                   # data type
+                
+            if len(p) > 3:
+                index += 1
+                run(p[2])
+
+
+        elif p[0] == 'varname':
+            run1 = run(p[1])
+            type1 = type(run1)  
+
+            if type1 == str:
+                print("Line %d: Undeclared Variable %s." %(p[-1], p[1]))
+                errors += 1
+            elif FuncPmtrs[checkName][index] != type1:
+                print("Line %d: Incorrect data type passed: %s." %(p[-1], p[1]))
+                errors += 1
+
+            if len(p) > 3:
+                index += 1
+                if index == len(FuncPmtrs[checkName]):
+                    print("Line %d: Too many parameters passed." %p[-1])
+                    errors += 1
+                else: 
+                    run(p[2])
+
+            elif index < len(FuncPmtrs[checkName]) - 1:
+                print("Line %d: Not enough parameters passed." %p[-1])
+                errors += 1
 
 
         elif p[0] == 'return':
@@ -535,13 +574,13 @@ def run(p):
                 print("Line %d: Invalid return value (must be %s)" %(p[-1], wow))
                 errors += 1
 
+
         elif p[0] == 'func':
             run(p[1])                       # recursive step
             VarStack.append({})             # creates new stack of variables
             
-            run(p[2][1])
+            run(p[2])                       # declares all parameters
             
-            FuncTypes[p[2][2]] = p[2][0]    # stores the type of function
             run(p[3])                       # runs the code
             run(p[4])
             
@@ -608,7 +647,9 @@ else:               #there's a legit file u wanna read
             print("No errors found.")
             translate(f)
         else:
-            print("%d errors found.\nCould not create C file." %errors)
-        
-
+            if errors > 1:
+                print("%d errors found.\nCould not create C file." %errors)
+            else:
+                print("%d error found.\nCould not create C file." %errors)
+            
 

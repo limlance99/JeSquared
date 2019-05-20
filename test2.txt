@@ -1,6 +1,6 @@
 $ this is a comment, '$' must be followed by a white space(easy parsing)
 
-b174n6 summ0n ( b174n6 j3j3X ) {	
+b174n6 summ0n ( b174n6 j3j3X, lut4n6 j3j3Y ) {	
 	j3j3X = 5 p0h
 	b471k 5.5 p0h 	$ must be INT
 }
@@ -15,6 +15,7 @@ b174n6 l0d1m0n () {
 		j3j3C = j3j3B + j3j3B p0h	
 	}
 
+	summ0n () p0h
 	b471k 0 p0h
 }
 
