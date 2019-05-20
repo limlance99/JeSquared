@@ -25,7 +25,7 @@ j3j3b = 1 ;
 
 while (j3j3b <= j3j3a) { 
 j3j3temp = fibm0n(j3j3b) ; 
-printf ("%d", j3j3temp) ; printf("\n");
+printf("%d", j3j3temp) ; printf("\n");
 j3j3b = j3j3b + 1 ; 
 } 
 

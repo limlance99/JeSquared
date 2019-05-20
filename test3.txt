@@ -1,18 +1,19 @@
 b174n6 l0d1m0n () {
 	b174n6 j3j3A p0h
 	b174n6 j3j3B p0h
-	j3j3A = 4.5 p0h
-	$ j3j3D = 3 + 5 p0h
+	j3j3A = 4.5 p0h			$ error here
+	j3j3D = 3 + 5 p0h       $ error here
 	4.5 + 6.1 p0h
 	kUn6 ( 6 > 5 ) {
 		j3j3A = 6 p0h
 	}
 	p450k ("%d", &j3j3B) p0h
-	l4b45 ("%f", j3j3A) p0h
+	l4b45 ("%f", j3j3A) p0h	$ error here
+	b174n6 j3j3A p0h		$ error here
 	b471k 0 p0h
 }
 
 b174n6 summ0n ( b174n6 j3j3X, b174n6 j3j3Y) {
-	j3j3A = 7 p0h
+	j3j3A = 7 p0h			$ error here
 	b471k j3j3X + j3j3Y p0h
 }

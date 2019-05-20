@@ -93,7 +93,6 @@ def t_PERCENTFLOAT(t):
 def t_PERCENTINT(t):
     r'%d'
     return t
-
 def t_FNAME(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*m0n'
     return t
@@ -418,43 +417,57 @@ def run(p):
     #print("Current p: ", p)
     if type(p) == tuple:
         if p[0] in '+-*^':
-            if type(run(p[1])) == str or type(run(p[2])) == str:
-                    print("Line %d: Cannot operate (undeclared variable)." %p[-1])
-            elif type(run(p[1])) != type(run(p[2])): 
-                print("Line %d: Unsupported operand type(s) for " %p[-1] + p[1] +" and " + p[2])
+            run1 = run((p[1]))
+            run2 = run((p[2]))
+            temp1 = type(run1)
+            temp2 = type(run2)
+
+            if temp1 == str or temp2 == str:
+                    print("Line %d: Cannot '%s' (undeclared variable)." %(p[-1], p[0]))
+            elif temp1 != temp2: 
+                print("Line %d: Cannot '%s' (different data type)." %(p[-1], p[0]))
                 errors += 1
             else:
-                return run(p[1]) + run(p[2])
+                return run1 + run2
 
         elif p[0] == '/':
+            run1 = run((p[1]))
+            run2 = run((p[2]))
+            temp1 = type(run1)
+            temp2 = type(run2)
 
-            if type(run(p[1])) == str or type(run(p[2])) == str:
-                    print("Line %d: Cannot operate (undeclared variable)." %p[-1])
-            elif type(run(p[1])) == int and type(run(p[2])) == float:
-                print("Line %d: Unsupported operand type(s) for " %p[-1] + p[1] +" and " + p[2])
+            if temp1 == str or temp2 == str:
+                    print("Line %d: Cannot '%s' (undeclared variable)." %(p[-1], p[0]))
+            elif temp1 == int and temp2 == float:
+                print("Line %d: Cannot '%s' (different data type)." %(p[-1], p[0]))
                 errors += 1
-            elif type(run(p[1])) == int and type(run(p[2])) == int: 
+            elif temp1 == int and temp2 == int: 
                 try: 
-                    return run(p[1]) // run(p[2])
+                    return run1 // run2
                 except ZeroDivisionError:
                     print("Line %d: Division by 0." %p[-1])
                     errors += 1
             else: 
                 try: 
-                    return run(p[1]) / run(p[2])
+                    return run1 / run2
                 except ZeroDivisionError:
                     print("Line %d: Division by 0." %p[-1])
                     errors += 1
             
 
         elif p[0] == '%':
-            if type(run(p[1])) == str or type(run(p[2])) == str:
-                    print("Line %d: Cannot operate (undeclared variable)." %p[-1])
-            elif type(run(p[1])) != int or type(run(p[2])) != int:
-                print("Line %d: Unsupported operand type(s) for " %p[-1] + p[1] +" and " + p[2])
+            run1 = run((p[1]))
+            run2 = run((p[2]))
+            temp1 = type(run1)
+            temp2 = type(run2)
+
+            if temp1 == str or temp2 == str:
+                    print("Line %d: Cannot '%s' (undeclared variable)." %(p[-1], p[0]))
+            elif temp1 != int or temp2 != int:
+                print("Line %d: Cannot '%s' (different data type)." %(p[-1], p[0]))
                 errors += 1
             else:
-                return run(p[1]) % run(p[2])
+                return run1 % run2
 
         elif p[0] == '==':
             return run(p[1]) == run(p[2])
@@ -523,11 +536,13 @@ def run(p):
                 errors += 1
 
         elif p[0] == 'func':
-            run(p[1]) # recursive step
-            VarStack.append({})
+            run(p[1])                       # recursive step
+            VarStack.append({})             # creates new stack of variables
+            
             run(p[2][1])
-            FuncTypes[p[2][2]] = p[2][0]  # stores the type of function
-            run(p[3]) # runs the code
+            
+            FuncTypes[p[2][2]] = p[2][0]    # stores the type of function
+            run(p[3])                       # runs the code
             run(p[4])
             
             VarStack.pop()
@@ -547,18 +562,20 @@ def run(p):
                 print("Line %d: Undeclared variable %s." %(p[-1] , p[1]))
                 errors += 1
             else:
-                if type(run(p[2])) == str:
+                run2 = run((p[2]))
+                temp2 = type(run2)
+
+                if temp2 == str:
                     print("Line %d: Cannot assign (undeclared variable)." %p[-1])
-                elif type(VarStack[-1][p[1]]) != type(run(p[2])):
+                    errors += 1
+                elif type(VarStack[-1][p[1]]) != temp2:
                     print("Line %d: Cannot assign (different data type)." %p[-1])
                     errors += 1
                 else:
-                    VarStack[-1][p[1]] = run(p[2])
+                    VarStack[-1][p[1]] = run2
     else:
-        if VarStack and type(p) == str:     # if i have things in my stack                            
-
-                                            # if its a string then ill check if its in the stack
-                if p in VarStack[-1].keys():
+        if VarStack and type(p) == str:      # if i have things in my stack                            
+                if p in VarStack[-1].keys(): # if its a string then ill check if its in the stack
                     return VarStack[-1][p]
         return p 
 
