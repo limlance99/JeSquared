@@ -11,7 +11,7 @@ b174n6 fibm0n( b174n6 j3j3x) {
 	b174n6 j3j3b p0h
 	j3j3a = j3j3x - 1 p0h
 	j3j3b = j3j3x - 2 p0h
-	b471k fibm0n() + fibm0n(j3j3b) p0h
+	b471k fibm0n(j3j3a) + fibm0n(j3j3b) p0h
 }
 
 b174n6 l0d1m0n () {

@@ -133,9 +133,11 @@ def t_NEWLINE(t):
 
 def t_error(t):
     global errors
+    global SynError
     print("Line %d: Invalid token." %t.lineno)
     t.lexer.skip(1)
     errors += 1
+    SynError = True
 
 
 lexer = lex.lex()
@@ -155,9 +157,9 @@ def p_begin(p):#START
     '''
     begin : function
     '''
+    global Runner
     p[0] = p[1]
-
-    run(p[0])
+    Runner = p[0]
 
 def p_function(p):
     '''
@@ -173,6 +175,22 @@ def p_function(p):
     else:
         p[0] = p[1]
 
+def p_e1(p):
+    '''
+    function : function funcname error
+             | function funcname OPENCURL code error
+             | function funcname OPENCURL code return error
+             | function funcname OPENCURL code return EOL error
+    '''
+    if len(p) == 4:
+        print("(Expected '{').")
+    if len(p) == 6:
+        print("(Function has no return statement).")
+    if len(p) == 7:
+        print("(Expected 'p0h' at end of previous expression).")
+    if len(p) == 8:
+        print("(Expected '}').")
+
 def p_funcname(p):
     '''
     funcname : datatype FNAME OPENPAR parameters CLOSEPAR 
@@ -182,6 +200,20 @@ def p_funcname(p):
     # VarStack.append({})
     
     p[0] = ('funcname', id(p[1]), p[4], p[2],p.lexer.lineno)
+
+def p_e2(p):
+    '''
+    funcname : datatype error 
+             | datatype FNAME error 
+             | datatype FNAME parameters error
+    
+    '''    
+    if len(p) == 3:
+        print("(Expected function name).")
+    if len(p) == 4:
+        print("(Expected '(').")
+    if len(p) == 6:
+        print("(Expected ')').")
 
 def p_parameters(p):
     '''
@@ -193,6 +225,16 @@ def p_parameters(p):
         p[0] = ('parameters', p[1], p[3], p.lexer.lineno)
     else:
         p[0] = ('parameters', p[1], p.lexer.lineno)
+
+def p_e3(p):
+    '''
+    parameters : vardeclare error
+               | vardeclare COMMA error
+    '''
+    if len(p) == 3:
+        print("(No ',' found).")
+    if len(p) == 4:
+        print("(Unwanted ',' found).")
 
 def p_code(p): 
     '''
@@ -207,13 +249,27 @@ def p_code(p):
     '''
     if len(p) > 2:
         p[0] = ("code", p[1], p[2])
-    #print(p[1])
+
+def p_e3(p):
+    '''
+    code : code vardeclare error 
+        | code varassign error
+        | code io error
+        | code expression error
+    '''
+    print("(Expected 'p0h' at end of previous expression).")
 
 def p_return(p):
     '''
     return : RETURN expression
     '''
     p[0] = ('return', p[2], p.lexer.lineno)
+
+def p_e4(p):
+    '''
+    return : RETURN error
+    '''
+    print("(Missing return value).")
 
 def p_io(p):
     '''
@@ -224,9 +280,32 @@ def p_io(p):
         p[0] = ('io', p[4], p[8], p.lexer.lineno)
     else:
         p[0] = ('io', p[4], p[7], p.lexer.lineno)
-# def p_io_error(p):
-#     'io : INPUT error '
-#     print("Error in I/O Statement: Bad Expression")
+
+def p_e5(p):
+    '''
+    io : INPUT error
+       | OUTPUT error
+       | INPUT OPENPAR error
+       | OUTPUT OPENPAR error
+       | INPUT OPENPAR QUOTEMARK error
+       | OUTPUT OPENPAR QUOTEMARK error
+       | INPUT OPENPAR QUOTEMARK percenttype error
+       | OUTPUT OPENPAR QUOTEMARK percenttype error
+       | INPUT OPENPAR QUOTEMARK percenttype QUOTEMARK error
+       | OUTPUT OPENPAR QUOTEMARK percenttype QUOTEMARK error
+       | INPUT OPENPAR QUOTEMARK percenttype QUOTEMARK COMMA error
+       | OUTPUT OPENPAR QUOTEMARK percenttype QUOTEMARK COMMA error  
+    '''
+    if len(p) == 3:
+        print("(Expected '(').")
+    if len(p) == 4 or len(p) == 6:
+        print("(Expected quotation marks).")
+    if len(p) == 5:
+        print("(Expected formatting).")
+    if len(p) == 7:
+        print("(Expected ',').")
+    if len(p) == 8:
+        print("(Expected variable name).")
 
 def p_percenttype(p):
     '''
@@ -255,6 +334,16 @@ def p_bool(p):
     else:
         p[0] = (p[2],p[1],p[3])
 
+def p_e6(p):
+    '''
+    bool : expression error
+         | bool error
+         | expression boolop error
+         | bool boolop error
+         | NOT error
+    '''
+    print("(Invalid boolean expression).")
+
 def p_boolop(p):
     '''
     boolop : EQ
@@ -276,7 +365,13 @@ def p_if(p):
         p[0]=('if_else',p[3], p[5], p[6])
     else:
         p[0]=('if',p[3], p[5])
-    
+   
+def p_e7(p):
+    '''
+    if : IF error
+    ''' 
+    print("(Expected boolean statement).")
+
 def p_else(p):
     '''
     else : ELSE block
@@ -290,11 +385,24 @@ def p_while(p):
     '''
     p[0]=('while',p[3],p[5])
 
+def p_e8(p):
+    '''
+    while : WHILE error
+    ''' 
+    print("(Expected boolean statement).")        
+
 def p_block(p): #control block (while, if-else, regular statements)
     '''
     block : OPENCURL bcode CLOSECURL
     '''
     p[0] = p[2]
+
+def p_e9(p):
+    '''
+    block : error
+    '''
+    print("(Expected '{').")
+    
 
 def p_bcode(p): #NESTED REGULAR STATEMENTS
     '''
@@ -312,6 +420,15 @@ def p_bcode(p): #NESTED REGULAR STATEMENTS
     else:
         p[0] = (p[1])
 
+def p_e10(p):
+    '''
+    bcode : bcode BREAK error 
+          | bcode varassign error
+          | bcode io error
+          | bcode expression error
+          | bcode return error
+    '''
+    print("(Expected 'p0h' at end of previous expression).")
 
 def p_expression_math(p):
     '''
@@ -321,6 +438,36 @@ def p_expression_math(p):
     p[0] = (p[2],p[1],p[3], p.lexer.lineno)
     #print(p[0])
 
+def p_e11(p):
+    '''
+    expression : expression oper error
+    '''
+    print("(Invalid expression).")
+
+def p_expression_int_float(p):
+    '''
+    expression  : INT
+                | FLOAT
+                | NAME
+    '''
+    p[0] = p[1]
+
+def p_expression_function(p):
+    '''
+    expression : FNAME OPENPAR varname CLOSEPAR 
+    '''
+    p[0] = ('funcall', p[1], p[3], p.lexer.lineno)
+
+def p_e12(p):
+    '''
+    expression : FNAME error
+               | FNAME OPENPAR varname error
+    '''
+    if len(p) == 3:
+        print("(Expected '(').")
+    if len(p) == 5:
+        print("(Expected ')').")
+    
 def p_oper(p):
     '''
     oper :  EXP
@@ -337,19 +484,25 @@ def p_vardeclare(p):   #declare a variable
     '''
     vardeclare : datatype NAME
     '''
-    # global VarStack
-    # VarStack[-1][p[2]] = -1                  #default value of -1
-    p[0] = ('var', id(p[1]),p[2],p.lexer.lineno)   #to add:if p in varlist??
-    #print(p[0])
+    p[0] = ('var', id(p[1]),p[2],p.lexer.lineno)   
 
+def p_e13(p):
+    '''
+    vardeclare : datatype error
+    '''
+    print("(Expected variable name).")
+    
 def p_varassign(p):
     '''
     varassign : NAME EQUALS expression
     '''
-    # ERROR REMEMBER TO ADD THIS ERROR TO NOT COMPILE LIST
     p[0] = ('=', p[1],p[3],p.lexer.lineno)
-    #print(p[0])
-
+    
+def p_e14(p):
+    '''
+    varassign : NAME EQUALS error
+    '''
+    print("(Expected assignment expression).")
 
 def p_varname(p):
     '''
@@ -361,6 +514,12 @@ def p_varname(p):
         p[0] = ('varname', p[1], p[3], p.lexer.lineno)
     else:
         p[0] = ('varname', p[1], p.lexer.lineno) 
+
+def p_e15(p):
+    '''
+    varname : error
+    '''
+    print("(Invalid parameters passed).")
         
 
 def id(s):                          #identifies data type of NAME
@@ -371,29 +530,22 @@ def id(s):                          #identifies data type of NAME
     else:
         return 'STRING'
 
-def p_expression_int_float(p):
-    '''
-    expression  : INT
-                | FLOAT
-                | NAME
-    '''
-    p[0] = p[1]
-
-def p_expression_function(p):
-    '''
-    expression : FNAME OPENPAR varname CLOSEPAR 
-    '''
-    p[0] = ('funcall', p[1], p[3], p.lexer.lineno)
 
 def p_empty(p):       
     '''
     empty : 
     '''
     p[0] = None
+
 def p_error(p):
     global errors
-    print("Line %d: Syntax error." %p.lexer.lineno)
+    global SynError
+    if p:
+        print("Line %d: Syntax Error" %p.lexer.lineno, end=' ')
+    else:
+        print("Syntax Error (no '}' found at EOF).")
     errors += 1
+    SynError = True
 
 parser = yacc.yacc()
 
@@ -402,7 +554,9 @@ FuncTypes = {}
 FuncPmtrs = {}
 errors = 0
 index = 0
+SynError = False
 checkName = ''
+Runner = 0
 
 # Executing Code
 
@@ -553,24 +707,24 @@ def run(p):
             run1 = run(p[1])
             type1 = type(run1)  
 
-            if type1 == str:
-                print("Line %d: Undeclared Variable %s." %(p[-1], p[1]))
+            if index == len(FuncPmtrs[checkName]):
+                print("Line %d: Too many parameters passed." %p[-1])
                 errors += 1
-            elif FuncPmtrs[checkName][index] != type1:
-                print("Line %d: Incorrect data type passed: %s." %(p[-1], p[1]))
-                errors += 1
-
-            if len(p) > 3:
-                index += 1
-                if index == len(FuncPmtrs[checkName]):
-                    print("Line %d: Too many parameters passed." %p[-1])
+            else:
+                if type1 == str:
+                    print("Line %d: Undeclared Variable %s." %(p[-1], p[1]))
                     errors += 1
-                else: 
+                elif FuncPmtrs[checkName][index] != type1 and p[1] != None:
+                    print("Line %d: Incorrect data type passed for variable %s." %(p[-1], p[1]))
+                    errors += 1
+
+                if len(p) > 3:
+                    index += 1
                     run(p[2])
 
-            elif index < len(FuncPmtrs[checkName]) - 1:
-                print("Line %d: Not enough parameters passed." %p[-1])
-                errors += 1
+                elif index < len(FuncPmtrs[checkName]) - 1 or (p[1] == None and len(FuncPmtrs[checkName]) >= 1):
+                    print("Line %d: Not enough parameters passed." %p[-1])
+                    errors += 1
 
 
         elif p[0] == 'return':
@@ -647,7 +801,8 @@ else:               #there's a legit file u wanna read
             print("Done reading File.")
             break
         parser.parse(s)
-
+        if not SynError:
+           run(Runner)
         print()
         if errors == 0:
             print("No errors found.")

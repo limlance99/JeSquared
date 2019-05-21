@@ -1,14 +1,16 @@
 $ this is a comment, '$' must be followed by a white space(easy parsing)
 
-b174n6 summ0n ( b174n6 j3j3X, lut4n6 j3j3Y ) {	$ INT function that accepts one integer and one float
+b174n6 summ0n (b174n6 j3j3X, lut4n6 j3j3Y) {	$ INT function that accepts one integer and one float
 	j3j3X = 5 p0h
-	b471k 5.5 p0h 	$ must be INT
-	$b174n6 j3j3Y p0h	$ duplicate
+	b174n6 j3j3Y p0h	$ duplicate
+	b471k 5.5 p0h 		$ must be INT
 }
-b174n6 summ0n ( ){		$ function already declared
+
+b174n6 summ0n ( ) {	$ function already declared
 	notARealFunctionm0n() p0h $ undeclared function
 	b471k 0 p0h
-} 
+}
+
 b174n6 l0d1m0n () {		$ main function
 	b174n6 j3j3B p0h
 	lut4n6 j3j3D p0h
@@ -16,7 +18,7 @@ b174n6 l0d1m0n () {		$ main function
 										$ do operations of the same type
 	j3j3B = j3j3C + 1 p0h				$ undeclared variable in operation
 
-	b174n6 j3j3D p0h					$ var already been declared
+	b174n6 j3j3D p0h				$ var already been declared
 	j3j3C = 4.5	p0h						$ undeclared variable
 	kUn6 (j3j3B > 1) {
 		j3j3B = j3j3B / 0 p0h			$ zero division error
@@ -30,7 +32,9 @@ b174n6 l0d1m0n () {		$ main function
 	$ p450k("%d", j3j3B) p0h			$ syntax error - no ampersand for j3j3B
 	l4b45("%f", j3j3B) p0h				$ FLOAT i/o but int variable
 
-	summ0n (j3j3D, j3j3B) p0h			$ incorrect parameters passed
+	summ0n(j3j3D, j3j3B) p0h			$ incorrect parameters passed
+	summ0n(j3j3B, j3j3D)p0h
 	summ0n(j3j3B,j3j3D,j3j3B,j3j3D) p0h $ too many parameters
+	
 	b471k 0 p0h
 }

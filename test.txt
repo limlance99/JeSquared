@@ -1,5 +1,5 @@
 $ this is a comment, '$' must be followed by a white space(easy parsing)
 b174n6 l0d1m0n (){    
-    
-    b411k 0 p0h
+    b174n6 j3j3x p0h
+    b471k 0 p0h
 }
