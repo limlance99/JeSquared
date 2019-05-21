@@ -1,30 +1,25 @@
 $ this is a comment, '$' must be followed by a white space(easy parsing)
 
-b174n6 summ0n ( b174n6 j3j3X, lut4n6 j3j3Y ) {	
+b174n6 summ0n ( b174n6 j3j3X, lut4n6 j3j3Y ) {	$ INT function that accepts one integer and one float
 	j3j3X = 5 p0h
 	b471k 5.5 p0h 	$ must be INT
 }
-
-b174n6 l0d1m0n () {
+b174n6 summ0n ( ){		$ function already declared
+	b471k 0 p0h
+} 
+b174n6 l0d1m0n () {		$ main function
 	b174n6 j3j3B p0h
-	j3j3B = 5.5 + 1 - 4.5 * 3 p0h
-
+	lut4n6 j3j3D p0h
+	j3j3B = 5.5 + 1 - 4.5 * 3 p0h		$ invalid syntax, you can only 
+										$ do operations of the same type
 	kUn6 (j3j3B > 1) {
-		j3j3B = j3j3B / j3j3B p0h
+		j3j3B = j3j3B / 0 p0h			$ zero division error
 	} ed1 {
-		j3j3C = j3j3B + j3j3B p0h	
+		j3j3C = j3j3B + j3j3B p0h		$ undeclared function
 	}
+	p450k("%d", &j3j3D) p0h				$ INT i/o but float variable
+	p450k("%d", j3j3B) p0h				$ no ampersand for j3j3B
 
 	summ0n () p0h
 	b471k 0 p0h
 }
-
-
-
-$ b174n6 j3C p0h
-$ j3j3C = 5 p0h
-$ j3j3B = 5 p0h
-$ j3j3A = 3 + a p0h
-$ j3D = 4 p0h     $ error
-$ l4b45 ("%d", &j3j3B) p0h
-$ p450k ("%f", j3j3A) p0h 

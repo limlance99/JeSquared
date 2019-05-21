@@ -181,7 +181,7 @@ def p_funcname(p):
     # global VarStack
     # VarStack.append({})
     
-    p[0] = ('funcname', id(p[1]), p[4], p[2])
+    p[0] = ('funcname', id(p[1]), p[4], p[2],p.lexer.lineno)
 
 def p_parameters(p):
     '''
@@ -525,9 +525,15 @@ def run(p):
                     return 0.0
 
         elif p[0] == 'funcname':
-            FuncTypes[p[3]] = p[1]
-            FuncPmtrs[p[3]] = []
-            run(p[2])
+            if p[3] in FuncPmtrs:
+                print("Line %d: Function %s has already been declared." %(p[-1], p[3]))
+                errors += 1
+            else:
+                FuncTypes[p[3]] = p[1]
+                
+                FuncPmtrs[p[3]] = []
+                
+                run(p[2])
 
         elif p[0] == 'parameters':
             run(p[1])
